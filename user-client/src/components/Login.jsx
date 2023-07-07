@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useChatStore } from "../store/chat";
 import { toast } from "react-hot-toast";
+import { socket } from "../socket";
+import { useChatStore } from "../store/chat";
 
 export default function Login() {
-	const { connectUser } = useChatStore();
+	const { setUsername } = useChatStore();
 	const [name, setname] = useState("");
 
 	// handle user connection with server
@@ -14,7 +15,9 @@ export default function Login() {
 			e.target[0].value = "";
 			toast.error("Please enter a valid name");
 		} else {
-			connectUser();
+			socket.connect();
+			socket.emit("user-connect", { username: name });
+			setUsername(name);
 			setname("");
 			e.target[0].value = "";
 		}
