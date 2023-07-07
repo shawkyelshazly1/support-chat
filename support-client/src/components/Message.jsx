@@ -7,14 +7,14 @@ export default function Message({ message }) {
 		<>
 			<div
 				className={`flex flex-col gap-1 ${
-					message.type === "customer" ? "items-end" : ""
+					message.type === "customer" ? "" : "items-end"
 				}`}
 			>
 				<p
 					className={` py-2 px-4 text-lg break-words w-fit max-w-[75%] ${
 						message.type === "customer"
-							? "bg-[#ff4c38] text-white rounded-l-3xl rounded-tr-3xl"
-							: "bg-[#EDEFF3] rounded-r-3xl rounded-tl-3xl"
+							? "bg-[#EDEFF3] rounded-r-3xl rounded-tl-3xl"
+							: "bg-[#ff4c38] text-white rounded-l-3xl rounded-tr-3xl"
 					}`}
 				>
 					{message.content}
