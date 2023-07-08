@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
-import { useChatStore } from "../store/chat";
+import { useChatStore } from "../store/chatStore";
 import { toast } from "react-hot-toast";
+import { socket } from "../socket";
 
 export default function MessageInput() {
-	const { sendMessage } = useChatStore();
+	const { sendMessage, supportData } = useChatStore();
 	const [message, setMessage] = useState("");
 
 	// handle submitting the form to send the message to server
@@ -16,11 +17,19 @@ export default function MessageInput() {
 			e.target[0].value = "";
 			toast.error("please enter a message to send");
 		} else {
-			sendMessage({
+			let newMessage = {
 				content: message.trim(),
 				timeStamp: Date.now(),
 				type: "customer",
+			};
+
+			sendMessage(newMessage);
+
+			socket.emit("send-message", {
+				conversation: supportData.conversation,
+				message: newMessage,
 			});
+
 			setMessage("");
 			e.target[0].value = "";
 		}

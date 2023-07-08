@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 const store = (set, get) => ({
 	chatMessages: [],
@@ -6,6 +7,7 @@ const store = (set, get) => ({
 	isConnected: false,
 	inQueue: true,
 	socketClient: null,
+	supportData: {},
 	sendMessage: (message) =>
 		set((state) => ({ chatMessages: [message, ...state.chatMessages] })),
 	addInfoMessage: (message) => {
@@ -19,8 +21,16 @@ const store = (set, get) => ({
 	},
 	connectUser: (socketClient) =>
 		set(() => ({ isConnected: true, socketClient })),
-	disconnectUser: () => set(() => ({ isConnected: false, socketClient: null })),
+	disconnectUser: () =>
+		set(() => ({
+			chatMessages: [],
+			username: "",
+			isConnected: false,
+			inQueue: true,
+			socketClient: null,
+		})),
 	setUsername: (username) => set(() => ({ username })),
+	startSupportConnection: (supportData) => set({ inQueue: false, supportData }),
 });
 
-export const useChatStore = create(store);
+export const useChatStore = create(devtools(store));

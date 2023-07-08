@@ -1,7 +1,7 @@
 import { Toaster } from "react-hot-toast";
 import ChatContainer from "./components/ChatContainer";
 import Login from "./components/Login";
-import { useChatStore } from "./store/chat";
+import { useChatStore } from "./store/chatStore";
 import { useEffect } from "react";
 import { socket } from "./socket";
 
@@ -23,7 +23,6 @@ function App() {
 		return () => {
 			socket.off("connect", onConnect);
 			socket.off("disconnect", onDisconnect);
-			socket.off("foo");
 		};
 	}, []);
 

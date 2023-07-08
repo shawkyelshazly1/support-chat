@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { socket } from "../socket";
-import { useChatStore } from "../store/chat";
+import { useChatStore } from "../store/chatStore";
 
 export default function Login() {
 	const { setUsername } = useChatStore();

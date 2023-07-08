@@ -18,21 +18,24 @@ let server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
 // register socketIO userHandler
-const { supportHandler, userHandlers } = require("./socektIO");
+const {
+	supportHandler,
+	userHandlers,
+	conversationsHandler,
+} = require("./socektIO");
 const { Redis } = require("ioredis");
 
 // on Connection handlers
 const onConnection = (socket, redis) => {
 	supportHandler(io, socket, redis);
 	userHandlers(io, socket, redis);
+	conversationsHandler(io, socket, redis);
 };
 
 //connect redis
 const redis = new Redis(
 	"rediss://red-ced0ulen6mpgskihs2b0:AKeNvPvbnwnNA0W9gV9g2ANne8xADQUw@frankfurt-redis.render.com:6379"
 );
-
-
 
 // connect socketIO
 io.on("connection", (socket) => {

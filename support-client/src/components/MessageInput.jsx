@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
 import { useSupportStore } from "../store/supportStore";
 import { toast } from "react-hot-toast";
+import { socket } from "../socket";
 
 export default function MessageInput({ conversationId }) {
 	const { addMessage } = useSupportStore();
@@ -17,12 +18,18 @@ export default function MessageInput({ conversationId }) {
 			e.target[0].value = "";
 			toast.error("please enter a message to send");
 		} else {
-			addMessage({
+			let newMessage = {
 				content: message.trim(),
 				timeStamp: Date.now(),
 				type: "support",
-				conversationId,
+			};
+			addMessage(conversationId, newMessage);
+
+			socket.emit("send-message", {
+				conversation: conversationId,
+				message: newMessage,
 			});
+
 			setMessage("");
 			e.target[0].value = "";
 		}

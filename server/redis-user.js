@@ -26,8 +26,15 @@ const getUserQueuePositions = async (redisClient, socketId) => {
 	return userIdx;
 };
 
+const getFirstInQueue = async (redisClient) => {
+	return redisClient.lpop("users-queue", (e, res) => {
+		return res;
+	});
+};
+
 module.exports = {
 	addUserToQueue,
 	removeUserfromQueue,
 	getUserQueuePositions,
+	getFirstInQueue,
 };

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useChatStore } from "../store/chat";
+import { useChatStore } from "../store/chatStore";
 import Message from "./Message";
 
 export default function MessagesContainer() {

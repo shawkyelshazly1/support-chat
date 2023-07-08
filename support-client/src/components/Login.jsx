@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSupportStore } from "../store/supportStore";
+import { socket } from "../socket";
 
 export default function Login() {
 	const [formData, setformData] = useState({ username: "", password: "" });
-	const { connectUser } = useSupportStore();
+	const { connectSupport } = useSupportStore();
 
 	const handleFormSubmission = (e) => {
 		e.preventDefault();
 
 		if (formData.username === "" || formData.password === "")
 			toast.error("please enter valid login information");
-		else connectUser({ ...formData });
+		else {
+			connectSupport({ ...formData });
+			socket.connect();
+			socket.emit("support-connect", { username: formData.username });
+			setformData({ username: "", password: "" });
+			e.target[0].value = "";
+			e.target[1].value = "";
+		}
 	};
 
 	return (
