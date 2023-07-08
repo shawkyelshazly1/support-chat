@@ -3,11 +3,11 @@ import { useSupportStore } from "../store/supportStore";
 import Message from "./Message";
 
 // eslint-disable-next-line react/prop-types
-export default function MessagesContainer({ conversationId }) {
-	const { conversations } = useSupportStore();
+export default function MessagesContainer() {
+	const { conversations, selectedConversation } = useSupportStore();
 
-	let selectedConversation = conversations.filter(
-		(conversation) => conversation.id === conversationId
+	let conversation = conversations.filter(
+		(conversation) => conversation.id === selectedConversation.id
 	)[0];
 
 	useEffect(() => {
@@ -17,9 +17,13 @@ export default function MessagesContainer({ conversationId }) {
 
 	return (
 		<div className="flex flex-1 gap-3 flex-col-reverse w-full overflow-auto messages-container mt-auto max-h-[calc(100vh-6vh)]">
-			{selectedConversation.messages.map((message, idx) => (
-				<Message key={idx} message={message} />
-			))}
+			{selectedConversation === {} ? (
+				<></>
+			) : (
+				conversation?.messages.map((message, idx) => (
+					<Message key={idx} message={message} />
+				))
+			)}
 		</div>
 	);
 }

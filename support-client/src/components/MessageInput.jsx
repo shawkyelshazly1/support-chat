@@ -5,8 +5,8 @@ import { useSupportStore } from "../store/supportStore";
 import { toast } from "react-hot-toast";
 import { socket } from "../socket";
 
-export default function MessageInput({ conversationId }) {
-	const { addMessage } = useSupportStore();
+export default function MessageInput() {
+	const { addMessage, selectedConversation } = useSupportStore();
 	const [message, setMessage] = useState("");
 
 	// handle submitting the form to send the message to server
@@ -23,10 +23,10 @@ export default function MessageInput({ conversationId }) {
 				timeStamp: Date.now(),
 				type: "support",
 			};
-			addMessage(conversationId, newMessage);
+			addMessage(selectedConversation.id, newMessage);
 
 			socket.emit("send-message", {
-				conversation: conversationId,
+				conversation: selectedConversation.id,
 				message: newMessage,
 			});
 

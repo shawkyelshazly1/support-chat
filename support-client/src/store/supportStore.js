@@ -2,11 +2,29 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 const store = (set, get) => ({
-	isConnected: false,
+	isConnected: true,
 	connectedSupport: {},
-	conversations: [],
+	conversations: [
+		{
+			id: "asdasasfds",
+			socketId: "asdfsadsd",
+			username: "Ahmed",
+			messages: [],
+		},
+
+		{
+			id: "asewqebvb",
+			socketId: "asdsawedsd",
+			username: "Karim",
+			messages: [],
+		},
+	],
+	selectedConversation: {},
 	availableCapactiy: 4,
 	socketClient: null,
+	setSelectedConversation: (conversation) => {
+		set({ selectedConversation: { ...conversation } });
+	},
 	assignChat: ({ user, conversation }) => {
 		set({
 			availableCapactiy: get().availableCapactiy - 1,
@@ -40,8 +58,6 @@ const store = (set, get) => ({
 		let selectedConversation = get().conversations.filter(
 			(conversation) => conversation.id === conversationId
 		)[0];
-
-		console.log(selectedConversation);
 
 		selectedConversation.messages = [
 			...messages,

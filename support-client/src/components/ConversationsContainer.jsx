@@ -2,10 +2,17 @@ import { useEffect } from "react";
 import { useSupportStore } from "../store/supportStore";
 import ChatContainer from "./ChatContainer";
 import { socket } from "../socket";
+import ConversationsSection from "./ConversationsSection";
+import DocumentationSection from "./DocumentationSection";
 
 export default function ConversationsContainer() {
-	const { conversations, assignChat, availableCapactiy, addMessagesHistory } =
-		useSupportStore();
+	const {
+		conversations,
+		assignChat,
+		availableCapactiy,
+		addMessagesHistory,
+		selectedConversation,
+	} = useSupportStore();
 
 	useEffect(() => {
 		let pingQueueTimer = null;
@@ -28,7 +35,6 @@ export default function ConversationsContainer() {
 		});
 
 		socket.on("recieve-messages-history", (data) => {
-			console.log(data);
 			addMessagesHistory(data.conversation, data.messages);
 		});
 
@@ -40,11 +46,15 @@ export default function ConversationsContainer() {
 		};
 	}, [availableCapactiy]);
 
+	console.log(selectedConversation);
+
 	return (
-		<div className="felx flex-1 grid grid-flow-col grid-cols-auto ">
-			{conversations.map((conversation) => (
-				<ChatContainer key={conversation.id} conversation={conversation} />
-			))}
+		<div className="flex flex-row gap-2 w-full h-full ">
+			<ConversationsSection />
+
+			{selectedConversation === {} ? <></> : <ChatContainer />}
+
+			<DocumentationSection />
 		</div>
 	);
 }
