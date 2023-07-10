@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-let url = "http://localhost:5000";
+let url = "https://support-desk-api-9wy1.onrender.com";
 
 export const socket = io(url, {
 	autoConnect: false,
