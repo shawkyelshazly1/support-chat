@@ -1,13 +1,27 @@
+const {
+	joinSupportList,
+	leaveSupportList,
+	retrieveSupport,
+	updateSupport,
+} = require("../redis-support");
 const { getFirstInQueue } = require("../redis-user");
 
 module.exports = (io, socket, redis) => {
+
+	
+
 	socket.on("support-connect", async (data) => {
 		console.log(`Support Connected.`);
 		socket.username = data.username;
+		await joinSupportList(redis, {
+			socketId: socket.id,
+			username: data.username,
+		});
 	});
 
 	socket.on("disconnect", async () => {
 		console.log(`Support Disconnected.`);
+		await leaveSupportList(redis, socket.id);
 	});
 
 	socket.on("disconnecting", () => {
@@ -37,10 +51,32 @@ module.exports = (io, socket, redis) => {
 				username: socket.username,
 				conversation,
 			});
+
+			// add to active conversaitons on support
+			let { support, idx } = await retrieveSupport(redis, socket.id);
+			support = {
+				...support,
+				active: support.active + 1,
+			};
+			await updateSupport(redis, support, idx);
 		}
 	});
 
-	socket.on("leave-room", ({ conversationId }) => {
+	socket.on("change-status", async ({ status }) => {
+		let { support, idx } = await retrieveSupport(redis, socket.id);
+		support = { ...support, status, stateStart: Date.now() };
+		await updateSupport(redis, support, idx);
+	});
+
+	socket.on("leave-room", async ({ conversationId }) => {
 		socket.leave(conversationId);
+		// remove from active conversations on user disconnection
+		let { support, idx } = await retrieveSupport(redis, socket.id);
+		support = {
+			...support,
+			active: support.active - 1,
+			closed: support.closed + 1,
+		};
+		await updateSupport(redis, support, idx);
 	});
 };

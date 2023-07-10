@@ -7,7 +7,11 @@ const app = express();
 
 app.use(
 	cors({
-		origin: ["http://localhost:3000/", "http://localhost:3001/"],
+		origin: [
+			"http://localhost:3000/",
+			"http://localhost:3001/",
+			"http://localhost:3002/",
+		],
 		methods: ["GET", "POST"],
 		credentials: true,
 	})
@@ -22,6 +26,7 @@ const {
 	supportHandler,
 	userHandlers,
 	conversationsHandler,
+	realtimeDashboardHandler,
 } = require("./socektIO");
 const { Redis } = require("ioredis");
 
@@ -30,6 +35,7 @@ const onConnection = (socket, redis) => {
 	supportHandler(io, socket, redis);
 	userHandlers(io, socket, redis);
 	conversationsHandler(io, socket, redis);
+	realtimeDashboardHandler(io, socket, redis);
 };
 
 //connect redis

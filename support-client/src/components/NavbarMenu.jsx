@@ -4,6 +4,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { useSupportStore } from "../store/supportStore";
 import { useState } from "react";
 import { BiSolidDownArrow } from "react-icons/bi";
+import { socket } from "../socket";
 
 export default function NavbarMenu() {
 	const { currentStatus, changeStatus, disconnectSupport, conversations } =
@@ -71,6 +72,7 @@ export default function NavbarMenu() {
 					style={{ fontWeight: "bold" }}
 					onClick={() => {
 						changeStatus("online");
+						socket.emit("change-status", { status: "online" });
 						setAnchorEl(null);
 					}}
 				>
@@ -81,6 +83,7 @@ export default function NavbarMenu() {
 					style={{ fontWeight: "bold" }}
 					onClick={() => {
 						changeStatus("offline");
+						socket.emit("change-status", { status: "offline" });
 						setAnchorEl(null);
 					}}
 				>

@@ -1,10 +1,31 @@
 // add user to queue
 const addUserToQueue = async (redisClient, { socketId, username }) => {
-	redisClient.rpush("users-queue", JSON.stringify({ socketId, username }));
+	redisClient.rpush(
+		"users-queue",
+		JSON.stringify({
+			socketId,
+			username,
+			startTime: Date.now(),
+			skill: "general",
+		})
+	);
 };
 
 const removeUserfromQueue = async (redisClient, { socketId, username }) => {
-	redisClient.lrem("users-queue", 1, JSON.stringify({ socketId, username }));
+	let usersList = await redisClient.lrange(
+		"users-queue",
+		0,
+		-1,
+		async (err, data) => {
+			return await JSON.stringify(data);
+		}
+	);
+
+	usersList = usersList.map((user) => JSON.parse(user));
+
+	let foundUser = usersList.filter((user) => user.socketId === socketId)[0];
+
+	redisClient.lrem("users-queue", 1, JSON.stringify(foundUser));
 };
 
 const getUserQueuePositions = async (redisClient, socketId) => {
@@ -32,9 +53,25 @@ const getFirstInQueue = async (redisClient) => {
 	});
 };
 
+const getCustomersInQueue = async (redisClient) => {
+	let usersQueue = await redisClient.lrange(
+		"users-queue",
+		0,
+		-1,
+		async (err, data) => {
+			return await JSON.stringify(data);
+		}
+	);
+
+	let users = usersQueue.map((user) => JSON.parse(user));
+
+	return users;
+};
+
 module.exports = {
 	addUserToQueue,
 	removeUserfromQueue,
 	getUserQueuePositions,
 	getFirstInQueue,
+	getCustomersInQueue,
 };
