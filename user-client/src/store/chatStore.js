@@ -28,7 +28,9 @@ const store = (set, get) => ({
 			conversationStatus: "inactive",
 		});
 	},
-	reconnect: () => {set({supportData:{},inQueue:true})},
+	reconnect: () => {
+		set({ supportData: {}, inQueue: true });
+	},
 	disconnectUser: () =>
 		set(() => ({
 			chatMessages: [],
@@ -36,6 +38,7 @@ const store = (set, get) => ({
 			isConnected: false,
 			inQueue: true,
 			socketClient: null,
+			supportData: {},
 			conversationStatus: "inactive",
 		})),
 	setUsername: (username) => set(() => ({ username })),

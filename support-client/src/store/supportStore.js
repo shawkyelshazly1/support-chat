@@ -10,6 +10,7 @@ const store = (set, get) => ({
 	selectedConversation: {},
 	availableCapactiy: 4,
 	socketClient: null,
+	currentStatus: "offline",
 	setSelectedConversation: (conversation) => {
 		set({ selectedConversation: { ...conversation } });
 	},
@@ -40,7 +41,6 @@ const store = (set, get) => ({
 			}
 		}
 	},
-
 	endConversation: (conversationId) => {
 		let selectedConversation = get().conversations.filter(
 			(conversation) => conversation.id === conversationId
@@ -99,7 +99,6 @@ const store = (set, get) => ({
 			),
 		});
 	},
-
 	addMessagesHistory: (conversationId, messages) => {
 		let selectedConversation = get().conversations.filter(
 			(conversation) => conversation.id === conversationId
@@ -115,7 +114,9 @@ const store = (set, get) => ({
 			),
 		});
 	},
-
+	changeStatus: (status) => {
+		set({ currentStatus: status });
+	},
 	setSocketClient: (socket) => set({ socketClient: socket }),
 	removeSocketClient: () => set({ socketClient: null }),
 	disconnectSupport: () =>
@@ -123,8 +124,10 @@ const store = (set, get) => ({
 			isConnected: false,
 			connectedSupport: {},
 			conversations: [],
-			socketClient: null,
+			selectedConversation: {},
 			availableCapactiy: 4,
+			socketClient: null,
+			currentStatus: "offline",
 		}),
 });
 

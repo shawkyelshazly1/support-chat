@@ -11,6 +11,7 @@ export default function ConversationsContainer() {
 		assignChat,
 		addMessage,
 		availableCapactiy,
+		currentStatus,
 		addMessagesHistory,
 		selectedConversation,
 		endConversation,
@@ -19,7 +20,7 @@ export default function ConversationsContainer() {
 	useEffect(() => {
 		let pingQueueTimer = null;
 
-		if (availableCapactiy > 0) {
+		if (availableCapactiy > 0 && currentStatus === "online") {
 			pingQueueTimer = setInterval(() => {
 				socket.emit("assign-chat-ping");
 				if (availableCapactiy <= 0) clearInterval(pingQueueTimer);
@@ -53,7 +54,7 @@ export default function ConversationsContainer() {
 			socket.off("recieve-messages-history");
 			socket.off("user-disconnected");
 		};
-	}, [availableCapactiy]);
+	}, [availableCapactiy,currentStatus]);
 
 	useEffect(() => {
 		socket.on("recieve-message", ({ conversation, message }) => {
