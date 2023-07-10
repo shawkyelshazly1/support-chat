@@ -9,9 +9,11 @@ export default function ConversationsContainer() {
 	const {
 		conversations,
 		assignChat,
+		addMessage,
 		availableCapactiy,
 		addMessagesHistory,
 		selectedConversation,
+		endConversation,
 	} = useSupportStore();
 
 	useEffect(() => {
@@ -21,7 +23,7 @@ export default function ConversationsContainer() {
 			pingQueueTimer = setInterval(() => {
 				socket.emit("assign-chat-ping");
 				if (availableCapactiy <= 0) clearInterval(pingQueueTimer);
-			}, 5000);
+			}, 2000);
 		}
 
 		// receive assigned chats
@@ -38,23 +40,56 @@ export default function ConversationsContainer() {
 			addMessagesHistory(data.conversation, data.messages);
 		});
 
+		socket.on("user-disconnected", (data) => {
+			console.log(data);
+			endConversation(data.conversationId);
+			socket.emit("leave-room", { conversationId: data.conversationId });
+		});
+
 		return () => {
 			clearInterval(pingQueueTimer);
 			socket.off("assign-chat-pong");
 			socket.off("user-joined");
 			socket.off("recieve-messages-history");
+			socket.off("user-disconnected");
 		};
 	}, [availableCapactiy]);
 
-	console.log(selectedConversation);
+	useEffect(() => {
+		socket.on("recieve-message", ({ conversation, message }) => {
+			addMessage(conversation, message);
+		});
+
+		return () => {
+			socket.off("recieve-message");
+		};
+	}, []);
 
 	return (
-		<div className="flex flex-row gap-2 w-full h-full ">
-			<ConversationsSection />
+		<div className="flex flex-row  w-full h-full ">
+			{conversations.length > 0 ? (
+				<>
+					<ConversationsSection />
 
-			{selectedConversation === {} ? <></> : <ChatContainer />}
+					{Object.keys(selectedConversation).length === 0 ? (
+						<div className="w-full h-full flex items-center justify-center">
+							<h1 className="text-2xl  italic font-black  text-emerald-500">
+								Select a conversation.
+							</h1>
+						</div>
+					) : (
+						<>
+							<ChatContainer />
 
-			<DocumentationSection />
+							<DocumentationSection />
+						</>
+					)}
+				</>
+			) : (
+				<div className="w-full h-full flex items-center justify-center">
+					<h1 className="text-4xl font-semibold">Awaiting Customers.... </h1>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -3,7 +3,7 @@ import Navbar from "./Navbar";
 
 export default function MainApp() {
 	return (
-		<div className="w-full h-screen flex flex-col-reverse gap-2">
+		<div className="w-full h-screen flex flex-col-reverse">
 			<ConversationsContainer />
 			<Navbar />
 		</div>

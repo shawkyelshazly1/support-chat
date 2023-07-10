@@ -16,7 +16,7 @@ export default function MessagesContainer() {
 	}, [conversations]);
 
 	return (
-		<div className="flex flex-1 gap-3 flex-col-reverse w-full overflow-auto messages-container mt-auto max-h-[calc(100vh-6vh)]">
+		<div className="flex flex-1 gap-3 flex-col-reverse px-4 w-full overflow-auto messages-container mt-auto max-h-[calc(100vh-6vh)]">
 			{selectedConversation === {} ? (
 				<></>
 			) : (

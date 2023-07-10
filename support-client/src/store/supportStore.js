@@ -1,24 +1,12 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-const store = (set, get) => ({
-	isConnected: true,
-	connectedSupport: {},
-	conversations: [
-		{
-			id: "asdasasfds",
-			socketId: "asdfsadsd",
-			username: "Ahmed",
-			messages: [],
-		},
+import _ from "lodash";
 
-		{
-			id: "asewqebvb",
-			socketId: "asdsawedsd",
-			username: "Karim",
-			messages: [],
-		},
-	],
+const store = (set, get) => ({
+	isConnected: false,
+	connectedSupport: {},
+	conversations: [],
 	selectedConversation: {},
 	availableCapactiy: 4,
 	socketClient: null,
@@ -29,17 +17,75 @@ const store = (set, get) => ({
 		set({
 			availableCapactiy: get().availableCapactiy - 1,
 			conversations: [
-				...get().conversations,
 				{
 					id: conversation,
 					socketId: user.socketId,
 					username: user.username,
 					messages: [],
+					status: "active",
 				},
+				...get().conversations,
 			],
 		});
+
+		if (Object.keys(get().selectedConversation).length === 0) {
+			let firstActive = get().conversations.filter(
+				(conversation) => conversation.status === "active"
+			)[0];
+
+			if (firstActive) {
+				set({ selectedConversation: firstActive });
+			} else {
+				set({ selectedConversation: get().conversations.slice(0)[0] });
+			}
+		}
 	},
 
+	endConversation: (conversationId) => {
+		let selectedConversation = get().conversations.filter(
+			(conversation) => conversation.id === conversationId
+		)[0];
+
+		selectedConversation.status = "inactive";
+
+		let updatedConversations = get().conversations.map((conversation) =>
+			conversation.id === conversationId ? selectedConversation : conversation
+		);
+
+		updatedConversations = _.sortBy(updatedConversations, [
+			(conversation) => {
+				return conversation.status;
+			},
+		]);
+
+		set({
+			conversations: updatedConversations,
+		});
+
+		if (selectedConversation.id === conversationId) {
+			set({
+				selectedConversation: get().conversations.filter(
+					(conversation) => conversation.id === conversationId
+				)[0],
+			});
+		}
+
+		if (get().availableCapactiy < 4) {
+			set({ availableCapactiy: get().availableCapactiy + 1 });
+		}
+	},
+	closeConversation: (conversationId) => {
+		let updatedConversations = get().conversations.filter(
+			(conversation) => conversation.id !== conversationId
+		);
+
+		set({ conversations: updatedConversations });
+		if (updatedConversations.length > 0) {
+			set({ selectedConversation: get().conversations.slice(0)[0] });
+		} else {
+			set({ selectedConversation: {} });
+		}
+	},
 	connectSupport: (user) => set({ connectedSupport: user, isConnected: true }),
 	addMessage: (conversationId, message) => {
 		let selectedConversation = get().conversations.filter(

@@ -8,6 +8,7 @@ const store = (set, get) => ({
 	inQueue: true,
 	socketClient: null,
 	supportData: {},
+	conversationStatus: "inactive",
 	sendMessage: (message) =>
 		set((state) => ({ chatMessages: [message, ...state.chatMessages] })),
 	addInfoMessage: (message) => {
@@ -21,6 +22,13 @@ const store = (set, get) => ({
 	},
 	connectUser: (socketClient) =>
 		set(() => ({ isConnected: true, socketClient })),
+	endConversation: () => {
+		set({
+			supportData: {},
+			conversationStatus: "inactive",
+		});
+	},
+	reconnect: () => {set({supportData:{},inQueue:true})},
 	disconnectUser: () =>
 		set(() => ({
 			chatMessages: [],
@@ -28,9 +36,11 @@ const store = (set, get) => ({
 			isConnected: false,
 			inQueue: true,
 			socketClient: null,
+			conversationStatus: "inactive",
 		})),
 	setUsername: (username) => set(() => ({ username })),
-	startSupportConnection: (supportData) => set({ inQueue: false, supportData }),
+	startSupportConnection: (supportData) =>
+		set({ inQueue: false, supportData, conversationStatus: "active" }),
 });
 
 export const useChatStore = create(devtools(store));

@@ -7,12 +7,15 @@ import { useChatStore } from "../store/chatStore";
 export default function ChatContainer() {
 	const {
 		inQueue,
+		endConversation,
 		addInfoMessage,
 		sendMessage,
+		conversationStatus,
 		username,
 		startSupportConnection,
 		chatMessages,
 		supportData,
+		reconnect,
 	} = useChatStore();
 
 	useEffect(() => {
@@ -57,18 +60,49 @@ export default function ChatContainer() {
 			sendMessage(message);
 		});
 
+		socket.on("terminated", () => {
+			endConversation();
+			sendMessage({
+				content: `Conversation ended!`,
+				type: "info",
+			});
+		});
+
+		socket.on("support-disconnect", () => {
+			sendMessage({
+				content: `Support disconnected, Something went wrong!`,
+				type: "info",
+			});
+			socket.emit("user-connect", { username });
+			reconnect();
+		});
+
 		return () => {
 			clearInterval(pingQueueStatusTimer);
 			socket.off("pong-queue");
 			socket.off("get-messages-history");
 			socket.off("support-connected");
 			socket.off("recieve-message");
+			socket.off("terminated");
+			socket.off("support-disconnect");
 		};
 	}, [chatMessages, inQueue]);
 
 	return (
 		<div className="w-full h-full flex flex-col gap-2 px-4 py-2">
 			<MessagesContainer />
+			{conversationStatus === "inactive" && !inQueue ? (
+				<button
+					onClick={() => {
+						location.reload();
+					}}
+					className="bg-green-500 w-fit self-center text-white font-semibold py-2 px-4 rounded-2xl cursor-pointer my-2"
+				>
+					Close Conversation
+				</button>
+			) : (
+				<></>
+			)}
 			<MessageInput />
 		</div>
 	);

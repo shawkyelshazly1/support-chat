@@ -1,15 +1,20 @@
-const { joinQueue } = require("../redis-support");
 const { getFirstInQueue } = require("../redis-user");
 
 module.exports = (io, socket, redis) => {
 	socket.on("support-connect", async (data) => {
 		console.log(`Support Connected.`);
 		socket.username = data.username;
-		// joinQueue(redis, { socketId: socket.id, username: data.username });
 	});
 
 	socket.on("disconnect", async () => {
 		console.log(`Support Disconnected.`);
+	});
+
+	socket.on("disconnecting", () => {
+		let supportConnectedRooms = Array.from(socket.rooms).slice(1);
+		supportConnectedRooms.map((room) =>
+			io.sockets.in(room).emit("support-disconnect")
+		);
 	});
 
 	socket.on("assign-chat-ping", async () => {
@@ -33,5 +38,9 @@ module.exports = (io, socket, redis) => {
 				conversation,
 			});
 		}
+	});
+
+	socket.on("leave-room", ({ conversationId }) => {
+		socket.leave(conversationId);
 	});
 };

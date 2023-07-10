@@ -14,4 +14,9 @@ module.exports = (io, socket) => {
 			.to(conversation)
 			.emit("recieve-message", { conversation, message });
 	});
+
+	socket.on("terminate-customer", ({ conversationId }) => {
+		socket.leave(conversationId);
+		socket.broadcast.to(conversationId).emit("terminated");
+	});
 };

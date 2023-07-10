@@ -15,13 +15,18 @@ module.exports = (io, socket, redis) => {
 		});
 	});
 	socket.on("disconnect", async () => {
-		console.log(`User disconnected`);
+		let inQueue = (await getUserQueuePositions(redis, socket.id)) >= 0;
 
-		//TODO: change based on user status if in chat or in queue
-		removeUserfromQueue(redis, {
-			socketId: socket.id,
-			username: socket.username,
-		});
+		if (!inQueue) {
+			socket.broadcast
+				.to(socket.room)
+				.emit("user-disconnected", { conversationId: socket.room });
+		} else {
+			removeUserfromQueue(redis, {
+				socketId: socket.id,
+				username: socket.username,
+			});
+		}
 	});
 
 	socket.on("ping-queue", async () => {
@@ -34,11 +39,11 @@ module.exports = (io, socket, redis) => {
 	});
 
 	socket.on("join-support-room", (data) => {
+		console.log(data.conversation);
 		socket.join(data.conversation);
+		socket.room = data.conversation;
 		socket.broadcast
 			.to(data.conversation)
 			.emit("user-joined", { conversation: data.conversation });
-
-		console.log(io.sockets.adapter.rooms);
 	});
 };
