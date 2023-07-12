@@ -49,7 +49,7 @@ export default function MessageInput() {
 	return (
 		<form
 			onSubmit={(e) => handleSendingMessage(e)}
-			className="flex flex-row w-full gap-2 items-center"
+			className="flex flex-row w-full gap-2 items-center "
 		>
 			<input
 				disabled={formStatus}

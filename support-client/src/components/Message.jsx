@@ -13,8 +13,8 @@ export default function Message({ message }) {
 				<p
 					className={` py-2 px-4 text-lg break-words w-fit max-w-[75%] ${
 						message.type === "customer"
-							? "bg-[#EDEFF3] rounded-r-3xl rounded-tl-3xl"
-							: "bg-[#ff4c38] text-white rounded-l-3xl rounded-tr-3xl"
+							? "bg-[#8A3BA2] rounded-r-3xl rounded-tl-3xl text-white"
+							: "bg-[#3F5B92] text-white rounded-l-3xl rounded-tr-3xl"
 					}`}
 				>
 					{message.content}
