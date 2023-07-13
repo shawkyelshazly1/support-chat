@@ -4,7 +4,15 @@ const _ = require("lodash");
 
 module.exports = (io, socket, redis) => {
 	socket.on("admin-connect", () => {
+		socket.type = "admin";
 		console.log("Admin connected.");
+	});
+
+	socket.on("disconnect", () => {
+		
+		if (socket.type === "admin") {
+			console.log(`Admin Disconnected.`);
+		}
 	});
 
 	socket.on("ping-queue-updates", async () => {

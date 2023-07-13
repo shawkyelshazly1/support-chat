@@ -4,8 +4,7 @@ import _ from "lodash";
 
 export default function ActivitySummary() {
 	const { agentsData } = useAdminStore();
-	console.log();
-	console.log(agentsData.length * 4);
+
 	return (
 		<div className="flex flex-col bg-white rounded-2xl flex-1">
 			<h1 className="w-full border-b-[1px] text-xl font-semibold px-4 py-3">

@@ -16,6 +16,7 @@ export default function ChatContainer() {
 		chatMessages,
 		supportData,
 		reconnect,
+		reRouted,
 	} = useChatStore();
 
 	useEffect(() => {
@@ -50,10 +51,12 @@ export default function ChatContainer() {
 				(message) => message.type === "customer"
 			);
 
-			socket.emit("recieve-messages-history", {
-				conversation: supportData.conversation,
-				messages,
-			});
+			if (!reRouted) {
+				socket.emit("recieve-messages-history", {
+					conversation: supportData.conversation,
+					messages,
+				});
+			}
 		});
 
 		socket.on("recieve-message", ({ _, message }) => {

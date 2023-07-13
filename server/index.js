@@ -5,12 +5,14 @@ require("dotenv").config();
 
 const app = express();
 
+app.use(express.json());
+
 app.use(
 	cors({
 		origin: [
-			"http://localhost:3000/",
-			"http://localhost:3001/",
-			"http://localhost:3002/",
+			"http://localhost:3000",
+			"http://localhost:3001",
+			"http://localhost:3002",
 			"https://supportdesk-customer.onrender.com",
 			"https://supportdesk-admin.onrender.com",
 			"https://supportdesk-agent.onrender.com",
@@ -32,6 +34,8 @@ const {
 	realtimeDashboardHandler,
 } = require("./socektIO");
 const { Redis } = require("ioredis");
+const { initDBConnection } = require("./database");
+const { AdminAPI } = require("./api");
 
 // on Connection handlers
 const onConnection = (socket, redis) => {
@@ -40,6 +44,9 @@ const onConnection = (socket, redis) => {
 	conversationsHandler(io, socket, redis);
 	realtimeDashboardHandler(io, socket, redis);
 };
+
+// connect MongoDB
+initDBConnection();
 
 //connect redis
 const redis = new Redis(
@@ -50,6 +57,9 @@ const redis = new Redis(
 io.on("connection", (socket) => {
 	onConnection(socket, redis);
 });
+
+// register APIs
+AdminAPI(app);
 
 server.listen(process.env.PORT || 5000, () => {
 	console.log(`🚀 Server started on port ${process.env.PORT || 5000}`);

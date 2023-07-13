@@ -7,12 +7,10 @@ const {
 const { getFirstInQueue } = require("../redis-user");
 
 module.exports = (io, socket, redis) => {
-
-	
-
 	socket.on("support-connect", async (data) => {
 		console.log(`Support Connected.`);
 		socket.username = data.username;
+		socket.type = "support";
 		await joinSupportList(redis, {
 			socketId: socket.id,
 			username: data.username,
@@ -20,8 +18,10 @@ module.exports = (io, socket, redis) => {
 	});
 
 	socket.on("disconnect", async () => {
-		console.log(`Support Disconnected.`);
-		await leaveSupportList(redis, socket.id);
+		if (socket.type === "support") {
+			console.log(`Support Disconnected.`);
+			await leaveSupportList(redis, socket.id);
+		}
 	});
 
 	socket.on("disconnecting", () => {

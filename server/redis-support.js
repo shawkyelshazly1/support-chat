@@ -45,8 +45,7 @@ const leaveSupportList = async (redisClient, socketId) => {
 
 // update support
 const updateSupport = async (redisClient, updatedSupport, idx) => {
-	console.log(updatedSupport);
-	console.log(idx);
+	
 	redisClient.lset(
 		"support-list",
 		parseInt(idx),

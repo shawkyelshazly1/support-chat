@@ -6,10 +6,11 @@ import { IoSettings } from "react-icons/io5";
 import { useAppStore } from "../store/appStore";
 import SideMenuIcon from "../small components/SideMenuIcon";
 import { useAdminStore } from "../store/adminStore";
+import { socket } from "../socket";
 
 export default function Sidemenu() {
 	const { activeWindow } = useAppStore();
-	const { disconnectAdmin } = useAdminStore();
+	const { logout, admin } = useAdminStore();
 	return (
 		<div className="w-[6vw] pt-6 flex flex-col items-center gap-20 my-3">
 			<AiOutlineDashboard size={45} className="" color="#070F36" />
@@ -26,12 +27,16 @@ export default function Sidemenu() {
 						color={activeWindow === "conversations" ? "white" : "#97A4B7"}
 					/>
 				</SideMenuIcon>
-				<SideMenuIcon window={"settings"}>
-					<IoSettings
-						size={35}
-						color={activeWindow === "settings" ? "white" : "#97A4B7"}
-					/>
-				</SideMenuIcon>
+				{admin.role === "manager" ? (
+					<></>
+				) : (
+					<SideMenuIcon window={"settings"}>
+						<IoSettings
+							size={35}
+							color={activeWindow === "settings" ? "white" : "#97A4B7"}
+						/>
+					</SideMenuIcon>
+				)}
 			</div>
 
 			<MdLogout
@@ -39,7 +44,8 @@ export default function Sidemenu() {
 				color="#97A4B7"
 				className="cursor-pointer mt-auto mb-12"
 				onClick={() => {
-					disconnectAdmin();
+					logout();
+					socket.disconnect();
 				}}
 			/>
 		</div>

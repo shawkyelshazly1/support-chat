@@ -2,10 +2,11 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useAdminStore } from "../store/adminStore";
 import { socket } from "../socket";
+import axiosInstance from "../axiosConfig";
 
 export default function LoginForm() {
 	const [formData, setFormData] = useState({ username: "", password: "" });
-	const { loginAdmin } = useAdminStore();
+	const { login } = useAdminStore();
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,18 +22,17 @@ export default function LoginForm() {
 		}
 
 		// validate user information & login
-
-		if (Object.values(formData).every((value) => value.trim() === "admin")) {
-			// login user
-			toast.success("Logged in.");
-			loginAdmin(formData);
-			socket.connect();
-			socket.emit("admin-connect");
-			return;
-		} else {
-			toast.error("Wrong username or password.");
-			return;
-		}
+		axiosInstance
+			.post("/login", formData)
+			.then((res) => {
+				toast.success("Logged In.");
+				login(res.data);
+				socket.connect();
+				socket.emit("admin-connect");
+			})
+			.catch((error) => {
+				toast.error(error.response.data.error, { position: "bottom-center" });
+			});
 	};
 
 	return (

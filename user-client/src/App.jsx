@@ -12,7 +12,6 @@ function App() {
 		function onConnect() {
 			connectUser(socket);
 		}
-
 		function onDisconnect() {
 			disconnectUser();
 		}
