@@ -9,7 +9,6 @@ module.exports = (io, socket, redis) => {
 	});
 
 	socket.on("disconnect", () => {
-		
 		if (socket.type === "admin") {
 			console.log(`Admin Disconnected.`);
 		}

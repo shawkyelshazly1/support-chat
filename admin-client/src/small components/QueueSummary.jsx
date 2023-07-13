@@ -4,14 +4,15 @@ import { socket } from "../socket";
 import { useAdminStore } from "../store/adminStore";
 
 export default function QueueSummary() {
-	const { isConnected, queueSummary, setQueueSummaryData } = useAdminStore();
+	const { isAuthenticated, queueSummary, setQueueSummaryData } =
+		useAdminStore();
 	useEffect(() => {
 		let updatesInterval = undefined;
 
-		if (isConnected) {
+		if (isAuthenticated) {
 			updatesInterval = setInterval(() => {
 				socket.emit("ping-queue-updates");
-				if (!isConnected) {
+				if (!isAuthenticated) {
 					clearInterval(updatesInterval);
 				}
 			}, 10000);
@@ -25,7 +26,7 @@ export default function QueueSummary() {
 			socket.off("ping-queue-updates");
 			clearInterval(updatesInterval);
 		};
-	}, [isConnected]);
+	}, [isAuthenticated]);
 
 	return (
 		<div className="flex flex-col bg-white rounded-2xl">

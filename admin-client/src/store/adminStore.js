@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { validateAuth } from "../utils/admin";
 import { TroubleshootTwoTone } from "@mui/icons-material";
+import { socket } from "../socket";
 
 const store = (set, get) => ({
 	isAuthenticated: false,
@@ -42,6 +43,10 @@ const store = (set, get) => ({
 	},
 	checkAuth: async () => {
 		let response = await validateAuth();
+
+		socket.connect();
+		socket.emit("admin-connect");
+		console.log(get().socketClient);
 
 		if (response.admin) {
 			set({

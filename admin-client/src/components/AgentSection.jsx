@@ -4,15 +4,15 @@ import { socket } from "../socket";
 import { useAdminStore } from "../store/adminStore";
 
 export default function AgentSection() {
-	const { isConnected, setAgentsData, agentsData } = useAdminStore();
+	const { isAuthenticated, setAgentsData, agentsData } = useAdminStore();
 
 	useEffect(() => {
 		let updatesInterval = undefined;
 
-		if (isConnected) {
+		if (isAuthenticated) {
 			updatesInterval = setInterval(() => {
 				socket.emit("ping-agents-updates");
-				if (!isConnected) {
+				if (!isAuthenticated) {
 					clearInterval(updatesInterval);
 				}
 			}, 10000);
@@ -26,7 +26,7 @@ export default function AgentSection() {
 			socket.off("ping-agents-updates");
 			clearInterval(updatesInterval);
 		};
-	}, [isConnected]);
+	}, [isAuthenticated]);
 
 	return (
 		<div className="flex flex-col bg-white rounded-2xl flex-1 mb-6">
