@@ -1,25 +1,26 @@
 const { retrieveSupport, updateSupport } = require("../redis-support");
 
 module.exports = (io, socket, redis) => {
-	socket.on("get-messages-history", ({ conversation }) => {
-		socket.broadcast.to(conversation).emit("get-messages-history");
+	socket.on("support:get-history", ({ conversation }) => {
+		socket.broadcast.to(conversation).emit("user:get-history");
 	});
 
-	socket.on("recieve-messages-history", ({ conversation, messages }) => {
+	socket.on("user:send-history", ({ conversation, messages }) => {
 		socket.broadcast
 			.to(conversation)
-			.emit("recieve-messages-history", { conversation, messages });
+			.emit("support:receive-history", { conversation, messages });
 	});
 
-	socket.on("send-message", ({ conversation, message }) => {
+	// TODO:CHANGE FOR USER ALSO
+	socket.on("conversation:message", ({ conversation, message }) => {
 		socket.broadcast
 			.to(conversation)
-			.emit("recieve-message", { conversation, message });
+			.emit("conversation:message", { conversation, message });
 	});
 
-	socket.on("terminate-customer", async ({ conversationId }) => {
+	socket.on("support:end-conversation", async ({ conversationId }) => {
 		socket.leave(conversationId);
-		socket.broadcast.to(conversationId).emit("terminated");
+		socket.broadcast.to(conversationId).emit("user:end-conversation");
 
 		// remove from active conversations on user disconnection
 		let { support, idx } = await retrieveSupport(redis, socket.id);

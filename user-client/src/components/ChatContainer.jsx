@@ -24,46 +24,46 @@ export default function ChatContainer() {
 
 		if (inQueue) {
 			pingQueueStatusTimer = setInterval(() => {
-				socket.emit("ping-queue", { username });
+				socket.emit("user:queue", { username });
 				if (!inQueue) {
 					clearInterval(pingQueueStatusTimer);
 				}
 			}, 5000);
 		}
 
-		socket.on("pong-queue", (data) => {
+		socket.on("user:queue", (data) => {
 			addInfoMessage(data);
 		});
 
-		socket.on("support-connected", (supportData) => {
+		socket.on("user:support-connected", (supportData) => {
 			startSupportConnection(supportData);
 			addInfoMessage({
 				content: `You are now connected with ${supportData.username}`,
 				type: "info",
 			});
-			socket.emit("join-support-room", {
+			socket.emit("user:join", {
 				conversation: supportData.conversation,
 			});
 		});
 
-		socket.on("get-messages-history", () => {
+		socket.on("user:get-history", () => {
 			let messages = chatMessages.filter(
 				(message) => message.type === "customer"
 			);
 
 			if (!reRouted) {
-				socket.emit("recieve-messages-history", {
+				socket.emit("user:send-history", {
 					conversation: supportData.conversation,
 					messages,
 				});
 			}
 		});
 
-		socket.on("recieve-message", ({ _, message }) => {
+		socket.on("conversation:message", ({ _, message }) => {
 			sendMessage(message);
 		});
 
-		socket.on("terminated", () => {
+		socket.on("user:end-conversation", () => {
 			endConversation();
 			sendMessage({
 				content: `Conversation ended!`,
@@ -71,23 +71,23 @@ export default function ChatContainer() {
 			});
 		});
 
-		socket.on("support-disconnect", () => {
+		socket.on("user:support-disconnect", () => {
 			sendMessage({
 				content: `Support disconnected, Something went wrong!`,
 				type: "info",
 			});
-			socket.emit("user-connect", { username });
+			socket.emit("user:connect", { username });
 			reconnect();
 		});
 
 		return () => {
 			clearInterval(pingQueueStatusTimer);
-			socket.off("pong-queue");
-			socket.off("get-messages-history");
-			socket.off("support-connected");
-			socket.off("recieve-message");
-			socket.off("terminated");
-			socket.off("support-disconnect");
+			socket.off("user:queue");
+			socket.off("user:get-history");
+			socket.off("user:support-connected");
+			socket.off("conversation:message");
+			socket.off("user:end-conversation");
+			socket.off("user:support-disconnect");
 		};
 	}, [chatMessages, inQueue]);
 

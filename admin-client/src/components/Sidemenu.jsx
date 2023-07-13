@@ -6,7 +6,7 @@ import { IoSettings } from "react-icons/io5";
 import { useAppStore } from "../store/appStore";
 import SideMenuIcon from "../small components/SideMenuIcon";
 import { useAdminStore } from "../store/adminStore";
-import { socket } from "../socket";
+import { socket } from "../socket/socket";
 
 export default function Sidemenu() {
 	const { activeWindow } = useAppStore();

@@ -6,7 +6,7 @@ const {
 
 module.exports = (io, socket, redis) => {
 	// when user connects
-	socket.on("user-connect", async (data) => {
+	socket.on("user:connect", async (data) => {
 		console.log("user started session");
 		socket.username = data.username;
 		socket.type = "user";
@@ -23,7 +23,7 @@ module.exports = (io, socket, redis) => {
 			if (!inQueue) {
 				socket.broadcast
 					.to(socket.room)
-					.emit("user-disconnected", { conversationId: socket.room });
+					.emit("user:disconnected", { conversationId: socket.room });
 			} else {
 				removeUserfromQueue(redis, {
 					socketId: socket.id,
@@ -33,20 +33,20 @@ module.exports = (io, socket, redis) => {
 		}
 	});
 
-	socket.on("ping-queue", async () => {
+	socket.on("user:queue", async () => {
 		let userIdx = await getUserQueuePositions(redis, socket.id);
 		if (userIdx >= 0)
-			socket.emit("pong-queue", {
+			socket.emit("user:queue", {
 				content: `Please wait, You are No.${userIdx + 1} on the queue.`,
 				type: "info",
 			});
 	});
 
-	socket.on("join-support-room", (data) => {
+	socket.on("user:join", (data) => {
 		socket.join(data.conversation);
 		socket.room = data.conversation;
 		socket.broadcast
 			.to(data.conversation)
-			.emit("user-joined", { conversation: data.conversation });
+			.emit("conversation:user-joined", { conversation: data.conversation });
 	});
 };

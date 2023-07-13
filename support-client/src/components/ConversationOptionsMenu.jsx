@@ -21,7 +21,7 @@ export default function ConversationOptionsMenu() {
 
 	const handleEndConversation = () => {
 		endConversation(selectedConversation.id);
-		socket.emit("terminate-customer", {
+		socket.emit("support:end-conversation", {
 			conversationId: selectedConversation.id,
 		});
 

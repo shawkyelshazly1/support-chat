@@ -16,7 +16,7 @@ export default function Login() {
 			toast.error("Please enter a valid name");
 		} else {
 			socket.connect();
-			socket.emit("user-connect", { username: name });
+			socket.emit("user:connect", { username: name });
 			setUsername(name);
 			setname("");
 			e.target[0].value = "";

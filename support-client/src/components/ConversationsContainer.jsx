@@ -22,47 +22,47 @@ export default function ConversationsContainer() {
 
 		if (availableCapactiy > 0 && currentStatus === "online") {
 			pingQueueTimer = setInterval(() => {
-				socket.emit("assign-chat-ping");
+				socket.emit("support:new-conversation");
 				if (availableCapactiy <= 0) clearInterval(pingQueueTimer);
 			}, 2000);
 		}
 
 		// receive assigned chats
-		socket.on("assign-chat-pong", (data) => {
+		socket.on("support:new-conversation", (data) => {
 			assignChat(data);
 		});
 
-		socket.on("user-joined", (data) => {
+		socket.on("conversation:user-joined", (data) => {
 			//ping customer for previous messages
-			socket.emit("get-messages-history", { conversation: data.conversation });
+			socket.emit("support:get-history", { conversation: data.conversation });
 		});
 
-		socket.on("recieve-messages-history", (data) => {
+		socket.on("support:receive-history", (data) => {
 			addMessagesHistory(data.conversation, data.messages);
 		});
 
-		socket.on("user-disconnected", (data) => {
+		socket.on("user:disconnected", (data) => {
 			console.log(data);
 			endConversation(data.conversationId);
-			socket.emit("leave-room", { conversationId: data.conversationId });
+			socket.emit("support:leave", { conversationId: data.conversationId });
 		});
 
 		return () => {
 			clearInterval(pingQueueTimer);
-			socket.off("assign-chat-pong");
-			socket.off("user-joined");
-			socket.off("recieve-messages-history");
-			socket.off("user-disconnected");
+			socket.off("support:new-conversation");
+			socket.off("conversation:user-joined");
+			socket.off("support:receive-history");
+			socket.off("user:disconnected");
 		};
-	}, [availableCapactiy,currentStatus]);
+	}, [availableCapactiy, currentStatus]);
 
 	useEffect(() => {
-		socket.on("recieve-message", ({ conversation, message }) => {
+		socket.on("conversation:message", ({ conversation, message }) => {
 			addMessage(conversation, message);
 		});
 
 		return () => {
-			socket.off("recieve-message");
+			socket.off("conversation:message");
 		};
 	}, []);
 

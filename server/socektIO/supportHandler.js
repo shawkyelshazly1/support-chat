@@ -7,7 +7,7 @@ const {
 const { getFirstInQueue } = require("../redis-user");
 
 module.exports = (io, socket, redis) => {
-	socket.on("support-connect", async (data) => {
+	socket.on("support:connect", async (data) => {
 		console.log(`Support Connected.`);
 		socket.username = data.username;
 		socket.type = "support";
@@ -27,11 +27,11 @@ module.exports = (io, socket, redis) => {
 	socket.on("disconnecting", () => {
 		let supportConnectedRooms = Array.from(socket.rooms).slice(1);
 		supportConnectedRooms.map((room) =>
-			io.sockets.in(room).emit("support-disconnect")
+			io.sockets.in(room).emit("user:support-disconnect")
 		);
 	});
 
-	socket.on("assign-chat-ping", async () => {
+	socket.on("support:new-conversation", async () => {
 		console.log("i have avail get me chat");
 		let userInQueue = await getFirstInQueue(redis);
 		if (userInQueue) {
@@ -40,13 +40,16 @@ module.exports = (io, socket, redis) => {
 			let conversation = `${userInQueue.socketId}&${socket.id}`;
 
 			// send userSocket to support
-			socket.emit("assign-chat-pong", { user: userInQueue, conversation });
+			socket.emit("support:new-conversation", {
+				user: userInQueue,
+				conversation,
+			});
 
 			// join room based on name format: userSocketId&SupportSocketId
 			socket.join(conversation);
 
 			// send supportSocket to user
-			socket.to(userInQueue.socketId).emit("support-connected", {
+			socket.to(userInQueue.socketId).emit("user:support-connected", {
 				socketId: socket.id,
 				username: socket.username,
 				conversation,
@@ -62,13 +65,13 @@ module.exports = (io, socket, redis) => {
 		}
 	});
 
-	socket.on("change-status", async ({ status }) => {
+	socket.on("support:update-status", async ({ status }) => {
 		let { support, idx } = await retrieveSupport(redis, socket.id);
 		support = { ...support, status, stateStart: Date.now() };
 		await updateSupport(redis, support, idx);
 	});
 
-	socket.on("leave-room", async ({ conversationId }) => {
+	socket.on("support:leave", async ({ conversationId }) => {
 		socket.leave(conversationId);
 		// remove from active conversations on user disconnection
 		let { support, idx } = await retrieveSupport(redis, socket.id);

@@ -28,7 +28,7 @@ export default function MessageInput() {
 			};
 			addMessage(selectedConversation.id, newMessage);
 
-			socket.emit("send-message", {
+			socket.emit("conversation:message", {
 				conversation: selectedConversation.id,
 				message: newMessage,
 			});

@@ -15,7 +15,7 @@ export default function Login() {
 		else {
 			connectSupport({ ...formData });
 			socket.connect();
-			socket.emit("support-connect", { username: formData.username });
+			socket.emit("support:connect", { username: formData.username });
 			setformData({ username: "", password: "" });
 			e.target[0].value = "";
 			e.target[1].value = "";

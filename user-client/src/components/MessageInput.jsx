@@ -26,7 +26,7 @@ export default function MessageInput() {
 
 			sendMessage(newMessage);
 
-			socket.emit("send-message", {
+			socket.emit("conversation:message", {
 				conversation: supportData.conversation,
 				message: newMessage,
 			});

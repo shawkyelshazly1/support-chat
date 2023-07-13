@@ -72,7 +72,7 @@ export default function NavbarMenu() {
 					style={{ fontWeight: "bold" }}
 					onClick={() => {
 						changeStatus("online");
-						socket.emit("change-status", { status: "online" });
+						socket.emit("support:update-status", { status: "online" });
 						setAnchorEl(null);
 					}}
 				>
@@ -83,7 +83,7 @@ export default function NavbarMenu() {
 					style={{ fontWeight: "bold" }}
 					onClick={() => {
 						changeStatus("offline");
-						socket.emit("change-status", { status: "offline" });
+						socket.emit("support:update-status", { status: "offline" });
 						setAnchorEl(null);
 					}}
 				>

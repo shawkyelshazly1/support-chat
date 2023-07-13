@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useAdminStore } from "../store/adminStore";
-import { socket } from "../socket";
+import { socket } from "../socket/socket";
 import axiosInstance from "../axiosConfig";
 
 export default function LoginForm() {
