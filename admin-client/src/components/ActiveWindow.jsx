@@ -4,7 +4,7 @@ import RealtimeDashboard from "../pages/RealtimeDashboard";
 import Settings from "../pages/Settings";
 import { useEffect } from "react";
 import { useAdminStore } from "../store/adminStore";
-import { socket } from "../socket";
+import { socket } from "../socket/socket";
 
 export default function ActiveWindow() {
 	const { activeWindow } = useAppStore();

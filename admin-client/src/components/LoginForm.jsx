@@ -28,7 +28,7 @@ export default function LoginForm() {
 				toast.success("Logged In.");
 				login(res.data);
 				socket.connect();
-				socket.emit("admin-connect");
+				socket.emit("admin:connect");
 			})
 			.catch((error) => {
 				toast.error(error.response.data.error, { position: "bottom-center" });

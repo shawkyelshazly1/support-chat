@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import AgentCard from "../small components/AgentCard";
-import { socket } from "../socket";
+import { socket } from "../socket/socket";
 import { useAdminStore } from "../store/adminStore";
 
 export default function AgentSection() {
@@ -11,19 +11,19 @@ export default function AgentSection() {
 
 		if (isAuthenticated) {
 			updatesInterval = setInterval(() => {
-				socket.emit("ping-agents-updates");
+				socket.emit("admin:agents-updates");
 				if (!isAuthenticated) {
 					clearInterval(updatesInterval);
 				}
 			}, 10000);
 		}
 
-		socket.on("pong-agents-updates", (data) => {
+		socket.on("admin:agents-updates", (data) => {
 			setAgentsData(data);
 		});
 
 		return () => {
-			socket.off("ping-agents-updates");
+			socket.off("admin:agents-updates");
 			clearInterval(updatesInterval);
 		};
 	}, [isAuthenticated]);

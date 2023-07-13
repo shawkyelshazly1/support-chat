@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import SkillsTable from "./SkillsTable";
-import { socket } from "../socket";
+import { socket } from "../socket/socket";
 import { useAdminStore } from "../store/adminStore";
 
 export default function QueueSummary() {
@@ -11,19 +11,19 @@ export default function QueueSummary() {
 
 		if (isAuthenticated) {
 			updatesInterval = setInterval(() => {
-				socket.emit("ping-queue-updates");
+				socket.emit("admin:queue-updates");
 				if (!isAuthenticated) {
 					clearInterval(updatesInterval);
 				}
 			}, 10000);
 		}
 
-		socket.on("pong-queue-updates", (data) => {
+		socket.on("admin:queue-updates", (data) => {
 			setQueueSummaryData(data);
 		});
 
 		return () => {
-			socket.off("ping-queue-updates");
+			socket.off("admin:queue-updates");
 			clearInterval(updatesInterval);
 		};
 	}, [isAuthenticated]);

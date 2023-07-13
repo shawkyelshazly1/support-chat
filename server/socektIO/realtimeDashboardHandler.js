@@ -3,7 +3,7 @@ const { getSupportList } = require("../redis-support");
 const _ = require("lodash");
 
 module.exports = (io, socket, redis) => {
-	socket.on("admin-connect", () => {
+	socket.on("admin:connect", () => {
 		socket.type = "admin";
 		console.log("Admin connected.");
 	});
@@ -14,7 +14,7 @@ module.exports = (io, socket, redis) => {
 		}
 	});
 
-	socket.on("ping-queue-updates", async () => {
+	socket.on("admin:queue-updates", async () => {
 		let customersInQueue = await getCustomersInQueue(redis);
 		let currentTime = Date.now();
 		let skillsGrouped = _.groupBy(
@@ -53,11 +53,11 @@ module.exports = (io, socket, redis) => {
 			skills: grouped,
 		};
 
-		socket.emit("pong-queue-updates", data);
+		socket.emit("admin:queue-updates", data);
 	});
 
-	socket.on("ping-agents-updates", async () => {
+	socket.on("admin:agents-updates", async () => {
 		let data = await getSupportList(redis);
-		socket.emit("pong-agents-updates", data);
+		socket.emit("admin:agents-updates", data);
 	});
 };
