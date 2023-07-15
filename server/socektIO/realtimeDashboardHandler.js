@@ -3,7 +3,12 @@ const { getSupportList } = require("../redis-support");
 const _ = require("lodash");
 
 module.exports = (io, socket, redis) => {
-	socket.on("admin:connect", () => {
+	socket.on("admin:connect", (data) => {
+		let { settings, ...adminData } = data;
+
+		socket.admin = adminData;
+		socket.admin_settings = settings;
+
 		socket.type = "admin";
 		console.log("Admin connected.");
 	});
@@ -48,7 +53,9 @@ module.exports = (io, socket, redis) => {
 		let data = {
 			totalInQueue: customersInQueue.length,
 			totalOverdue: customersInQueue.filter(
-				(customer) => Math.floor((currentTime - customer.startTime) / 1000) > 50
+				(customer) =>
+					Math.floor((currentTime - customer.startTime) / 1000) >
+					socket.admin_settings.sla
 			).length,
 			skills: grouped,
 		};

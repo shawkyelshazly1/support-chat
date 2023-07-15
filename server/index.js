@@ -35,7 +35,8 @@ const {
 } = require("./socektIO");
 const { Redis } = require("ioredis");
 const { initDBConnection } = require("./database");
-const { AdminAPI } = require("./api");
+
+const { AdminAPI, AgentAPI } = require("./api");
 
 // on Connection handlers
 const onConnection = (socket, redis) => {
@@ -60,6 +61,7 @@ io.on("connection", (socket) => {
 
 // register APIs
 AdminAPI(app);
+AgentAPI(app);
 
 server.listen(process.env.PORT || 5000, () => {
 	console.log(`🚀 Server started on port ${process.env.PORT || 5000}`);

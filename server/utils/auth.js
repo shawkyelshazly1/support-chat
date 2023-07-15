@@ -21,12 +21,6 @@ exports.generateAPIKey = async (payload) => {
 	return apiKey;
 };
 
-// hash the api key
-exports.hashAPIKey = async (apiKey) => {
-	let hashedAPIKey = await bcryptjs.hash(apiKey, 10);
-	return hashedAPIKey;
-};
-
 // check if valid token
 exports.validateAccessToken = async (req) => {
 	const token = req.get("authorization");
@@ -38,6 +32,22 @@ exports.validateAccessToken = async (req) => {
 		);
 
 		req.admin = payload;
+		return true;
+	}
+	return false;
+};
+
+// check if valid token agent
+exports.validateAccessTokenAgent = async (req) => {
+	const token = req.get("authorization");
+
+	if (token) {
+		const payload = await jwt.verify(
+			token.split(" ")[1],
+			process.env.ACCESS_TOKEN_SECRET
+		);
+
+		req.agent = payload;
 		return true;
 	}
 	return false;

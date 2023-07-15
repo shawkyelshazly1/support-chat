@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { validateAuth } from "../utils/admin";
-import { TroubleshootTwoTone } from "@mui/icons-material";
+
 import { socket } from "../socket/socket";
 
 const store = (set, get) => ({
@@ -11,7 +11,7 @@ const store = (set, get) => ({
 	socketClient: null,
 	queueSummary: {},
 	agentsData: [],
-	isLoading: TroubleshootTwoTone,
+	isLoading: true,
 	setLoading: (loadingState) => set({ isLoading: loadingState }),
 	logout: () => {
 		localStorage.removeItem("accessToken");
@@ -46,7 +46,7 @@ const store = (set, get) => ({
 
 		if (response.admin) {
 			socket.connect();
-			socket.emit("admin:connect");
+			socket.emit("admin:connect", { ...response.admin });
 			set({
 				accessToken: localStorage.getItem("accessToken"),
 				admin: response.admin,
@@ -55,14 +55,18 @@ const store = (set, get) => ({
 				socketClient: socket,
 			});
 		} else {
+			localStorage.removeItem("accessToken");
 			set({
 				isAuthenticated: false,
 				admin: {},
 				socketClient: null,
 				accessToken: "",
-				isLoading: true,
+				isLoading: false,
 			});
 		}
+	},
+	updateSettings: (updatedSettings) => {
+		set({ admin: { ...get().admin, settings: updatedSettings } });
 	},
 });
 

@@ -23,8 +23,10 @@
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.10.1",
     "react-loader-spinner": "^5.3.4",
+    "react-modal": "^3.16.1",
     "react-router": "^6.14.1",
     "react-router-dom": "^6.14.1",
+    "simple-encryptor": "^4.0.0",
     "socket.io-client": "^4.7.1",
     "zustand": "^4.3.9"
   },
@@ -38,6 +40,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
     "postcss": "^8.4.25",
+    "prettier": "^3.0.0",
+    "prettier-plugin-tailwindcss": "^0.4.0",
     "tailwindcss": "^3.3.2",
     "vite": "^4.4.0"
   }

@@ -6,7 +6,7 @@ import axiosInstance from "../axiosConfig";
 
 export default function LoginForm() {
 	const [formData, setFormData] = useState({ username: "", password: "" });
-	const { login } = useAdminStore();
+	const { login, admin } = useAdminStore();
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,7 +28,8 @@ export default function LoginForm() {
 				toast.success("Logged In.");
 				login(res.data);
 				socket.connect();
-				socket.emit("admin:connect");
+
+				socket.emit("admin:connect", { ...res.data.admin });
 			})
 			.catch((error) => {
 				toast.error(error.response.data.error, { position: "bottom-center" });

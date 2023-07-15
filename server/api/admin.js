@@ -1,17 +1,24 @@
-const { AdminService } = require("../services");
+const { AdminService, AgentService } = require("../services");
 const adminAuth = require("./middlewares/auth");
 
 let base_URL = `/admin/v1`;
 
 module.exports = (app) => {
 	const adminService = new AdminService();
+	const agentService = new AgentService();
 
 	// Register Route
 	app.post(`${base_URL}/register`, async (req, res, next) => {
-		const { username = "", password = "", company = "" } = req.body || {};
+		const {
+			username = "",
+			password = "",
+			company = "",
+			firstName = "",
+			lastName = "",
+		} = req.body || {};
 
 		// validate all fields are present
-		if (!username || !password || !company) {
+		if (!username || !password || !company || !firstName || !lastName) {
 			return res.status(409).json({ error: "Admin information is required." });
 		}
 
@@ -20,6 +27,8 @@ module.exports = (app) => {
 			username,
 			password,
 			company,
+			firstName,
+			lastName,
 		});
 
 		// return if error
@@ -77,5 +86,78 @@ module.exports = (app) => {
 		}
 
 		return res.status(200).json({ ...api_key });
+	});
+
+	// load admin settings
+	app.get(`${base_URL}/settings`, adminAuth, async (req, res, next) => {
+		const { _id } = req.admin;
+
+		// find by id in req
+		let settings = await adminService.getAdminSettings(_id);
+
+		// return if error
+		if (settings.error) {
+			return res.status(409).json({ error: settings.error });
+		}
+
+		return res.status(200).json(settings);
+	});
+
+	// update admin settings
+	app.post(`${base_URL}/settings`, adminAuth, async (req, res, next) => {
+		const { _id } = req.admin;
+		let { settings } = req.body;
+
+		// find by id in req
+		let updatedSettings = await adminService.updateAdminSettings(_id, settings);
+
+		// return if error
+		if (updatedSettings.error) {
+			return res.status(409).json({ error: updatedSettings.error });
+		}
+
+		return res.status(200).json(updatedSettings);
+	});
+
+	// create agent
+	app.post(`${base_URL}/agent/register`, adminAuth, async (req, res, next) => {
+		const {
+			username = "",
+			password = "",
+			company = "",
+			firstName = "",
+			lastName = "",
+			api_key = "",
+		} = req.body || {};
+
+		// validate all fields are present
+		if (
+			!username ||
+			!password ||
+			!company ||
+			!firstName ||
+			!lastName ||
+			!api_key
+		) {
+			return res.status(409).json({ error: "Agent information is required." });
+		}
+
+		// careate new agent in DB
+		let agent = await agentService.registerAgent({
+			username,
+			password,
+			company,
+			firstName,
+			lastName,
+			api_key,
+		});
+
+		// return if error
+		if (agent.error) {
+			return res.status(409).json({ error: agent.error });
+		}
+
+		// return success response
+		return res.status(200).json({ message: "Agent Created." });
 	});
 };

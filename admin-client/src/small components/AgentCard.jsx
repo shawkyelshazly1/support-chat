@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import AgentStatusItem from "./AgentStatusItem";
 import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
+
 
 export default function AgentCard({ agentData }) {
 	return (

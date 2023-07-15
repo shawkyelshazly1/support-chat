@@ -1,20 +1,41 @@
 const mongoose = require("mongoose");
 const { AdminModel } = require("../models");
 const { generateAPIKey } = require("../../utils/auth");
+const AdminSettingsRepository = require("./adminSettingsRepository");
 
 class AdminRepository {
+	constructor() {
+		this.repository = new AdminSettingsRepository();
+	}
 	// create admin
 	async CreateAdmin(adminData) {
 		try {
-			const newAdmin = await new AdminModel({
-				...adminData,
-				api_key: await generateAPIKey({
-					username: adminData.username,
-					company: adminData.company,
-				}),
+			let api_key = await generateAPIKey({
+				username: adminData.username,
+				company: adminData.company,
 			});
 
-			return await newAdmin.save();
+			let newAdmin = await new AdminModel({
+				...adminData,
+				api_key,
+			});
+
+			let adminSettings = await this.repository.CreateAdminSettings(
+				newAdmin._id,
+				api_key
+			);
+
+			await newAdmin.save();
+
+			newAdmin = await AdminModel.findByIdAndUpdate(
+				newAdmin._id,
+				{
+					settings: adminSettings._id,
+				},
+				{ new: true }
+			);
+
+			return newAdmin;
 		} catch (error) {
 			console.error(error);
 			return { error: "Something Went Wrong!" };
