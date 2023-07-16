@@ -17,14 +17,11 @@ class AdminService {
 				return { error: "Admin registration information is required" };
 			}
 
-			let existingAdmin = await this.repository.FindAdmin(
-				adminData.username,
-				adminData.company
-			);
+			let existingAdmin = await this.repository.FindAdmin(adminData.username);
 
 			if (existingAdmin) {
 				return {
-					error: "Sorry, Either username or company registered already.",
+					error: "Sorry, username registered already.",
 				};
 			}
 

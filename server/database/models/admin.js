@@ -14,7 +14,7 @@ const adminSchema = mongoose.Schema(
 			unique: true,
 			select: false,
 		},
-		company: { type: String, required: true, trim: true, unique: true },
+		company: { type: String, required: true, trim: true },
 		role: {
 			type: String,
 			required: true,

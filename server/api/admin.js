@@ -40,6 +40,51 @@ module.exports = (app) => {
 		return res.status(200).json({ message: "Admin Created." });
 	});
 
+	// Register Route
+	app.post(`${base_URL}/manager/register/`, async (req, res, next) => {
+		const {
+			username = "",
+			password = "",
+			company = "",
+			firstName = "",
+			lastName = "",
+			api_key = "",
+			role = "",
+		} = req.body || {};
+
+		// validate all fields are present
+		if (
+			!username ||
+			!password ||
+			!company ||
+			!firstName ||
+			!lastName ||
+			!api_key ||
+			!role
+		) {
+			return res.status(409).json({ error: "Admin information is required." });
+		}
+
+		// create new admin in DB
+		let admin = await adminService.registerAdmin({
+			username,
+			password,
+			company,
+			firstName,
+			lastName,
+			api_key,
+			role,
+		});
+
+		// return if error
+		if (admin.error) {
+			return res.status(409).json({ error: admin.error });
+		}
+
+		// return success response
+		return res.status(200).json({ message: "Admin Created." });
+	});
+
 	// login Route
 	app.post(`${base_URL}/login`, async (req, res, next) => {
 		const { username, password } = req.body;
@@ -121,6 +166,7 @@ module.exports = (app) => {
 
 	// create agent
 	app.post(`${base_URL}/agent/register`, adminAuth, async (req, res, next) => {
+		console.log(req.body);
 		const {
 			username = "",
 			password = "",

@@ -10,10 +10,15 @@ class AdminRepository {
 	// create admin
 	async CreateAdmin(adminData) {
 		try {
-			let api_key = await generateAPIKey({
-				username: adminData.username,
-				company: adminData.company,
-			});
+			let api_key;
+			if (!adminData.api_key) {
+				api_key = await generateAPIKey({
+					username: adminData.username,
+					company: adminData.company,
+				});
+			} else {
+				api_key = adminData.api_key;
+			}
 
 			let newAdmin = await new AdminModel({
 				...adminData,
@@ -74,10 +79,10 @@ class AdminRepository {
 	}
 
 	// find admin by username or company
-	async FindAdmin(adminUsername, adminCompany) {
+	async FindAdmin(adminUsername) {
 		try {
 			const existingAdmin = await AdminModel.findOne({
-				$or: [{ username: adminUsername }, { company: adminCompany }],
+				username: adminUsername,
 			});
 
 			return existingAdmin;
