@@ -9,14 +9,18 @@ const { getFirstInQueue } = require("../redis-user");
 module.exports = (io, socket, redis) => {
 	socket.on("support:connect", async (data) => {
 		console.log(`Support Connected.`);
-		socket.username = data.username;
-		socket.api_key = data.api_key;
+		let { settings, ...supportData } = data;
+
+		socket.support = supportData;
+		socket.api_key = settings.api_key;
+		socket.support_settings = settings;
 		socket.type = "support";
+
 		await joinSupportList(
 			redis,
 			{
 				socketId: socket.id,
-				username: data.username,
+				username: socket.support.firstName,
 			},
 			socket.api_key
 		);
@@ -39,6 +43,7 @@ module.exports = (io, socket, redis) => {
 	socket.on("support:new-conversation", async () => {
 		console.log("i have avail get me chat");
 		let userInQueue = await getFirstInQueue(redis, socket.api_key);
+
 		if (userInQueue) {
 			userInQueue = JSON.parse(userInQueue);
 

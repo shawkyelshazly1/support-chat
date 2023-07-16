@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
-import { useSupportStore } from "../store/supportStore";
+import { useConversationStore } from "../store/cnoversationStore";
 import { toast } from "react-hot-toast";
 import { socket } from "../socket";
 
 export default function MessageInput() {
-	const { addMessage, selectedConversation } = useSupportStore();
+	const { addMessage, selectedConversation } = useConversationStore();
 	const [message, setMessage] = useState("");
 	const [formStatus, setFormStatus] = useState(
 		selectedConversation.status === "inactive"

@@ -25,6 +25,7 @@ class AgentService {
 
 			let newAgent = await this.repository.CreateAgent({
 				...agentData,
+				settings: agentData.settingsId,
 				password: await hashPassword(agentData.password),
 				username,
 			});
@@ -53,7 +54,7 @@ class AgentService {
 
 			let accessToken = await generateAccessToken(existingAgent);
 
-			return { agent: existingAgent, accessToken };
+			return { support: existingAgent, accessToken };
 		} catch (error) {
 			console.error(error);
 			return { error: "Something Went Wrong!" };

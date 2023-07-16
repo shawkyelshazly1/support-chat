@@ -10,7 +10,6 @@ module.exports = (app) => {
 	// Register Route
 	app.post(`${base_URL}/register`, async (req, res, next) => {
 		const {
-			username = "",
 			password = "",
 			company = "",
 			firstName = "",
@@ -18,13 +17,12 @@ module.exports = (app) => {
 		} = req.body || {};
 
 		// validate all fields are present
-		if (!username || !password || !company || !firstName || !lastName) {
+		if (!password || !company || !firstName || !lastName) {
 			return res.status(409).json({ error: "Admin information is required." });
 		}
 
 		// create new admin in DB
 		let admin = await adminService.registerAdmin({
-			username,
 			password,
 			company,
 			firstName,
@@ -37,52 +35,56 @@ module.exports = (app) => {
 		}
 
 		// return success response
-		return res.status(200).json({ message: "Admin Created." });
+		return res
+			.status(200)
+			.json({ message: "Admin Created.", username: admin.username });
 	});
 
 	// Register Route
 	app.post(`${base_URL}/manager/register/`, async (req, res, next) => {
 		const {
-			username = "",
 			password = "",
 			company = "",
 			firstName = "",
 			lastName = "",
 			api_key = "",
 			role = "",
+			settingsId = "",
 		} = req.body || {};
 
 		// validate all fields are present
 		if (
-			!username ||
 			!password ||
 			!company ||
 			!firstName ||
 			!lastName ||
 			!api_key ||
-			!role
+			!role ||
+			!settingsId
 		) {
 			return res.status(409).json({ error: "Admin information is required." });
 		}
 
 		// create new admin in DB
-		let admin = await adminService.registerAdmin({
-			username,
+		let manager = await adminService.registerAdmin({
 			password,
 			company,
 			firstName,
 			lastName,
 			api_key,
 			role,
+			settingsId,
 		});
 
 		// return if error
-		if (admin.error) {
-			return res.status(409).json({ error: admin.error });
+		if (manager.error) {
+			return res.status(409).json({ error: manager.error });
 		}
 
 		// return success response
-		return res.status(200).json({ message: "Admin Created." });
+		return res
+			.status(200)
+			.json({ message: "Manager Created.", username: manager.username });
 	});
 
 	// login Route
@@ -172,10 +174,18 @@ module.exports = (app) => {
 			firstName = "",
 			lastName = "",
 			api_key = "",
+			settingsId = "",
 		} = req.body || {};
 
 		// validate all fields are present
-		if (!password || !company || !firstName || !lastName || !api_key) {
+		if (
+			!password ||
+			!company ||
+			!firstName ||
+			!lastName ||
+			!api_key ||
+			!settingsId
+		) {
 			return res.status(409).json({ error: "Agent information is required." });
 		}
 
@@ -186,6 +196,7 @@ module.exports = (app) => {
 			firstName,
 			lastName,
 			api_key,
+			settingsId
 		});
 
 		// return if error

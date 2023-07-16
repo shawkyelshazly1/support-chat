@@ -1,21 +1,23 @@
 import { useEffect } from "react";
 import { useSupportStore } from "../store/supportStore";
+import { useConversationStore } from "../store/cnoversationStore";
 import ChatContainer from "./ChatContainer";
 import { socket } from "../socket";
 import ConversationsSection from "./ConversationsSection";
 import DocumentationSection from "./DocumentationSection";
 
 export default function ConversationsContainer() {
+	const { currentStatus } = useSupportStore();
+
 	const {
-		conversations,
 		assignChat,
+		conversations,
 		addMessage,
 		availableCapactiy,
-		currentStatus,
 		addMessagesHistory,
 		selectedConversation,
 		endConversation,
-	} = useSupportStore();
+	} = useConversationStore();
 
 	useEffect(() => {
 		let pingQueueTimer = null;
@@ -41,7 +43,7 @@ export default function ConversationsContainer() {
 			addMessagesHistory(data.conversation, data.messages);
 		});
 
-		socket.on("user:disconnected", (data) => {
+		socket.on("user:disAuthenticated", (data) => {
 			console.log(data);
 			endConversation(data.conversationId);
 			socket.emit("support:leave", { conversationId: data.conversationId });
@@ -52,7 +54,7 @@ export default function ConversationsContainer() {
 			socket.off("support:new-conversation");
 			socket.off("conversation:user-joined");
 			socket.off("support:receive-history");
-			socket.off("user:disconnected");
+			socket.off("user:disAuthenticated");
 		};
 	}, [availableCapactiy, currentStatus]);
 
@@ -66,31 +68,27 @@ export default function ConversationsContainer() {
 		};
 	}, []);
 
-	return (
-		<div className="flex flex-row  w-full h-full ">
-			{conversations.length > 0 ? (
-				<>
-					<ConversationsSection />
+	return conversations.length > 0 ? (
+		<>
+			<ConversationsSection />
 
-					{Object.keys(selectedConversation).length === 0 ? (
-						<div className="w-full h-full flex items-center justify-center">
-							<h1 className="text-2xl  italic font-black  text-emerald-500">
-								Select a conversation.
-							</h1>
-						</div>
-					) : (
-						<>
-							<ChatContainer />
-
-							<DocumentationSection />
-						</>
-					)}
-				</>
-			) : (
+			{Object.keys(selectedConversation).length === 0 ? (
 				<div className="w-full h-full flex items-center justify-center">
-					<h1 className="text-4xl font-semibold">Awaiting Customers.... </h1>
+					<h1 className="text-2xl  italic font-black  text-emerald-500">
+						Select a conversation.
+					</h1>
 				</div>
+			) : (
+				<>
+					<ChatContainer />
+
+					<DocumentationSection />
+				</>
 			)}
+		</>
+	) : (
+		<div className="w-full h-full flex items-center justify-center">
+			<h1 className="text-4xl font-semibold">Awaiting Customers.... </h1>
 		</div>
 	);
 }

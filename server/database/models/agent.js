@@ -12,8 +12,15 @@ const agentSchema = mongoose.Schema(
 			trim: true,
 		},
 		company: { type: String, required: true, trim: true },
+		settings: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "AdminSettings",
+			autopopulate: true,
+		},
 	},
 	{ timestamps: true }
 );
+
+agentSchema.plugin(require("mongoose-autopopulate"));
 
 module.exports = mongoose.model("Agent", agentSchema);

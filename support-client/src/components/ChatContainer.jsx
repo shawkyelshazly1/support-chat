@@ -3,11 +3,11 @@
 import MessageInput from "./MessageInput";
 import MessagesContainer from "./MessagesContainer";
 
-import { useSupportStore } from "../store/supportStore";
+import { useConversationStore } from "../store/cnoversationStore";
 import ConversationOptionsMenu from "./ConversationOptionsMenu";
 
 export default function ChatContainer() {
-	const { selectedConversation } = useSupportStore();
+	const { selectedConversation } = useConversationStore();
 
 	return (
 		<div className="w-full h-full flex-1 flex flex-col gap-2 px-2 py-2  max-h-[calc(100vh-6vh)]">

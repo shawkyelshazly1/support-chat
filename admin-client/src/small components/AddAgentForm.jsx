@@ -2,6 +2,7 @@ import axiosInstance from "../axiosConfig";
 import { useEffect, useState } from "react";
 import { useAdminStore } from "../store/adminStore";
 import { toast } from "react-hot-toast";
+import FormSuccessModal from "./FormSuccessModal";
 
 export default function AddAgentForm({ closeModal }) {
 	const { admin } = useAdminStore();
@@ -11,6 +12,9 @@ export default function AddAgentForm({ closeModal }) {
 		lastName: "",
 		password: "",
 		confirmPassword: "",
+		settingsId: admin.settings._id,
+		company: admin.company,
+		api_key: admin.settings.api_key,
 	});
 
 	const [results, setResults] = useState(null);
@@ -36,13 +40,8 @@ export default function AddAgentForm({ closeModal }) {
 
 		let { confirmPassword, ...agentData } = formData;
 
-		let agentInfo = {
-			...agentData,
-			company: admin.company,
-			api_key: admin.settings.api_key,
-		};
 		axiosInstance
-			.post("agent/register", agentInfo)
+			.post("agent/register", agentData)
 			.then((res) => {
 				toast.success("Agent Created.");
 				setFormData({
@@ -50,6 +49,9 @@ export default function AddAgentForm({ closeModal }) {
 					lastName: "",
 					password: "",
 					confirmPassword: "",
+					settingsId: admin.settings._id,
+					company: admin.company,
+					api_key: admin.settings.api_key,
 				});
 
 				setResults({
@@ -63,24 +65,7 @@ export default function AddAgentForm({ closeModal }) {
 	};
 
 	return results !== null ? (
-		<div className="flex flex-col gap-4">
-			<div className="flex flex-row gap-4 items-center">
-				<h1 className="text-xl font-semibold text-gray-500">Username: </h1>
-				<h1 className="text-xl font-medium">{results.username} </h1>
-			</div>
-			<div className="flex flex-row gap-4 items-center">
-				<h1 className="text-xl font-semibold text-gray-500">Password: </h1>
-				<h1 className="text-xl font-medium">{results.password} </h1>
-			</div>
-			<button
-				onClick={() => {
-					closeModal();
-				}}
-				className="text-xl font-semibold text-white bg-amber-500 w-fit py-2 px-4 rounded-lg self-center mt-3"
-			>
-				Close
-			</button>
-		</div>
+		<FormSuccessModal results={results} closeModal={closeModal} />
 	) : (
 		<form
 			onSubmit={(e) => handleFormSubmission(e)}

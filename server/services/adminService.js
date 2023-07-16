@@ -1,4 +1,6 @@
 const { AdminRepository, AdminSettingsRepository } = require("../database");
+const { AdminModel } = require("../database/models");
+const { generateUniqueAdminUsername } = require("../utils/admin");
 const { hashPassword, generateAccessToken } = require("../utils/auth");
 const bcryptjs = require("bcryptjs");
 
@@ -17,17 +19,16 @@ class AdminService {
 				return { error: "Admin registration information is required" };
 			}
 
-			let existingAdmin = await this.repository.FindAdmin(adminData.username);
-
-			if (existingAdmin) {
-				return {
-					error: "Sorry, username registered already.",
-				};
-			}
+			let username = await generateUniqueAdminUsername(
+				AdminModel,
+				[adminData.firstName, adminData.lastName],
+				adminData.company
+			);
 
 			let newAdmin = await this.repository.CreateAdmin({
 				...adminData,
 				password: await hashPassword(adminData.password),
+				username,
 			});
 
 			return newAdmin;

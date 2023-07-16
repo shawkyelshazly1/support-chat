@@ -9,7 +9,6 @@ module.exports = (io, socket, redis) => {
 		socket.admin = adminData;
 		socket.api_key = settings.api_key;
 		socket.admin_settings = settings;
-
 		socket.type = "admin";
 		console.log("Admin connected.");
 	});

@@ -1,10 +1,11 @@
-import { useSupportStore } from "../store/supportStore";
+import { useConversationStore } from "../store/cnoversationStore";
 import { VscDebugDisconnect } from "react-icons/vsc";
 import { PiPlugsConnectedFill } from "react-icons/pi";
 
 /* eslint-disable react/prop-types */
 export default function ConversationCard({ conversation }) {
-	const { setSelectedConversation, selectedConversation } = useSupportStore();
+	const { setSelectedConversation, selectedConversation } =
+		useConversationStore();
 
 	return (
 		<div

@@ -59,7 +59,7 @@ export default function SettingsForm() {
 							onChange={(e) => handleFieldChange(e)}
 							type="number"
 							name="sla"
-							defaultValue={settingsFormData.sla}
+				
 							min={0}
 							value={settingsFormData.sla}
 							className="py-1 px-2 rounded-lg focus:outline-none border-[1px] border-[#cdd3dc] focus:border-[1px] focus:border-[#F59E0B] w-2/4"

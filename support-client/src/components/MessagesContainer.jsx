@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useSupportStore } from "../store/supportStore";
+import { useConversationStore } from "../store/cnoversationStore";
 import Message from "./Message";
 
 // eslint-disable-next-line react/prop-types
 export default function MessagesContainer() {
-	const { conversations, selectedConversation } = useSupportStore();
+	const { conversations, selectedConversation } = useConversationStore();
 
 	let conversation = conversations.filter(
 		(conversation) => conversation.id === selectedConversation.id

@@ -25,20 +25,32 @@ class AdminRepository {
 				api_key,
 			});
 
-			let adminSettings = await this.repository.CreateAdminSettings(
-				newAdmin._id,
-				api_key
-			);
-
 			await newAdmin.save();
 
-			newAdmin = await AdminModel.findByIdAndUpdate(
-				newAdmin._id,
-				{
-					settings: adminSettings._id,
-				},
-				{ new: true }
-			);
+			console.log(adminData.settingsId);
+
+			if (adminData.settingsId) {
+				newAdmin = await AdminModel.findByIdAndUpdate(
+					newAdmin._id,
+					{
+						settings: adminData.settingsId,
+					},
+					{ new: true }
+				);
+			} else {
+				let adminSettings = await this.repository.CreateAdminSettings(
+					newAdmin._id,
+					api_key
+				);
+
+				newAdmin = await AdminModel.findByIdAndUpdate(
+					newAdmin._id,
+					{
+						settings: adminSettings._id,
+					},
+					{ new: true }
+				);
+			}
 
 			return newAdmin;
 		} catch (error) {

@@ -30,13 +30,13 @@ module.exports = (app) => {
 	app.get(`${base_URL}/`, agentAuth, async (req, res, next) => {
 		const { _id } = req.agent;
 
-		let agent = await agentService.loadAgent(_id);
+		let support = await agentService.loadAgent(_id);
 
 		// return if error
-		if (agent.error) {
-			return res.status(409).json({ error: agent.error });
+		if (support.error) {
+			return res.status(409).json({ error: support.error });
 		}
 
-		return res.status(200).json({ agent });
+		return res.status(200).json({ support });
 	});
 };

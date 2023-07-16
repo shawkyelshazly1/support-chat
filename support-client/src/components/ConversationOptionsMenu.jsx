@@ -2,12 +2,12 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useState } from "react";
-import { useSupportStore } from "../store/supportStore";
+import { useConversationStore } from "../store/cnoversationStore";
 import { socket } from "../socket";
 
 export default function ConversationOptionsMenu() {
 	const { selectedConversation, endConversation, closeConversation } =
-		useSupportStore();
+		useConversationStore();
 	const [anchorEl, setAnchorEl] = useState(null);
 	let open = Boolean(anchorEl);
 

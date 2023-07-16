@@ -1,39 +1,26 @@
 import { Toaster } from "react-hot-toast";
-import Login from "./components/Login";
-import MainApp from "./components/MainApp";
-import { useSupportStore } from "./store/supportStore";
-import { useEffect } from "react";
-import { socket } from "./socket";
+
+import {
+	Route,
+	RouterProvider,
+	createBrowserRouter,
+	createRoutesFromElements,
+} from "react-router-dom";
+import RootLayout from "./layouts/RootLayout";
+import Login from "./pages/Login";
+import MainApp from "./pages/MainApp";
+
+const router = createBrowserRouter(
+	createRoutesFromElements(
+		<Route path="/" element={<RootLayout />}>
+			<Route index element={<Login />} />
+			<Route path="app" element={<MainApp />} />
+		</Route>
+	)
+);
 
 function App() {
-	const { setSocketClient, disconnectSupport } = useSupportStore();
-
-	useEffect(() => {
-		function onConnect() {
-			setSocketClient(socket);
-		}
-
-		function onDisconnect() {
-			disconnectSupport();
-		}
-
-		socket.on("connect", onConnect);
-		socket.on("disconnect", onDisconnect);
-
-		return () => {
-			socket.off("connect", onConnect);
-			socket.off("disconnect", onDisconnect);
-		};
-	}, []);
-
-	const { isConnected } = useSupportStore();
-
-	return (
-		<div className="w-full h-screen">
-			{!isConnected ? <Login /> : <MainApp />}
-			<Toaster />
-		</div>
-	);
+	return <RouterProvider router={router} />;
 }
 
 export default App;

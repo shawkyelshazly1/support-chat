@@ -1,24 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../axiosConfig";
 import { useAdminStore } from "../store/adminStore";
+import FormSuccessModal from "./FormSuccessModal";
 
 export default function AddManagerForm({ closeModal }) {
 	const { admin } = useAdminStore();
+
+	const [results, setResults] = useState(null);
+
 	const [formData, setFormData] = useState({
 		firstName: "",
 		lastName: "",
-		username: "",
 		password: "",
 		confirmPassword: "",
 		role: "manager",
 		company: admin.company,
 		api_key: admin.settings.api_key,
+		settingsId: admin.settings._id,
 	});
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
 	};
+
+	useEffect(() => {
+		return () => {
+			setResults(null);
+		};
+	}, []);
 
 	const handleFormSubmission = (e) => {
 		e.preventDefault();
@@ -39,21 +49,27 @@ export default function AddManagerForm({ closeModal }) {
 				setFormData({
 					firstName: "",
 					lastName: "",
-					username: "",
 					password: "",
 					confirmPassword: "",
 					role: "manager",
 					company: admin.company,
 					api_key: admin.settings.api_key,
+					settingsId: admin.settings._id,
 				});
-				closeModal();
+
+				setResults({
+					username: res.data.username,
+					password: formData.password,
+				});
 			})
 			.catch((error) => {
 				toast.error(error.response.data.error, { position: "bottom-center" });
 			});
 	};
 
-	return (
+	return results !== null ? (
+		<FormSuccessModal results={results} closeModal={closeModal} />
+	) : (
 		<form
 			onSubmit={(e) => handleFormSubmission(e)}
 			className="flex flex-col  gap-4 items-start"
@@ -76,15 +92,6 @@ export default function AddManagerForm({ closeModal }) {
 					placeholder="Last Name"
 				/>
 			</div>
-
-			<input
-				onChange={handleInputChange}
-				required
-				name="username"
-				type="text"
-				className="focus:outline-none border-[1px] py-1 px-2 rounded-lg text-lg"
-				placeholder="Username"
-			/>
 
 			<div className="flex flex-row justify-evenly gap-4">
 				<input

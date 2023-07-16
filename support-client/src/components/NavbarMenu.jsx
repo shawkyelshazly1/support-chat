@@ -2,13 +2,15 @@ import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import { useSupportStore } from "../store/supportStore";
+import { useConversationStore } from "../store/cnoversationStore";
 import { useState } from "react";
 import { BiSolidDownArrow } from "react-icons/bi";
 import { socket } from "../socket";
 
 export default function NavbarMenu() {
-	const { currentStatus, changeStatus, disconnectSupport, conversations } =
-		useSupportStore();
+	const { currentStatus, changeStatus, logout } = useSupportStore();
+	const { conversations } = useConversationStore();
+
 	const [anchorEl, setAnchorEl] = useState(null);
 	let open = Boolean(anchorEl);
 
@@ -24,9 +26,9 @@ export default function NavbarMenu() {
 		if (conversations.length > 0) {
 			alert("Please close all conversations before logging out.");
 		} else {
-			disconnectSupport();
+			logout();
 			setAnchorEl(null);
-			location.reload();
+			socket.disconnect();
 		}
 	};
 
