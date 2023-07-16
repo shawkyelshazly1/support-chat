@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
+import axiosInstance from "../axiosConfig";
+import { useAdminStore } from "../store/adminStore";
 
 export default function AddManagerForm({ closeModal }) {
+	const { admin } = useAdminStore();
 	const [formData, setFormData] = useState({
 		firstName: "",
 		lastName: "",
@@ -8,6 +12,8 @@ export default function AddManagerForm({ closeModal }) {
 		password: "",
 		confirmPassword: "",
 		role: "manager",
+		company: admin.company,
+		api_key: admin.settings.api_key,
 	});
 
 	const handleInputChange = (e) => {
@@ -16,16 +22,35 @@ export default function AddManagerForm({ closeModal }) {
 
 	const handleFormSubmission = (e) => {
 		e.preventDefault();
-		console.log(formData);
-		setFormData({
-			firstName: "",
-			lastName: "",
-			username: "",
-			password: "",
-			confirmPassword: "",
-			role: "manager",
-		});
-		closeModal();
+
+		if (formData.password !== formData.confirmPassword) {
+			toast.error("Password & confirm Password must match!", {
+				position: "bottom-center",
+			});
+			return;
+		}
+
+		let { confirmPassword, ...managerData } = formData;
+
+		axiosInstance
+			.post("manager/register", managerData)
+			.then((res) => {
+				toast.success("Manager Created.");
+				setFormData({
+					firstName: "",
+					lastName: "",
+					username: "",
+					password: "",
+					confirmPassword: "",
+					role: "manager",
+					company: admin.company,
+					api_key: admin.settings.api_key,
+				});
+				closeModal();
+			})
+			.catch((error) => {
+				toast.error(error.response.data.error, { position: "bottom-center" });
+			});
 	};
 
 	return (

@@ -166,9 +166,7 @@ module.exports = (app) => {
 
 	// create agent
 	app.post(`${base_URL}/agent/register`, adminAuth, async (req, res, next) => {
-		console.log(req.body);
 		const {
-			username = "",
 			password = "",
 			company = "",
 			firstName = "",
@@ -177,20 +175,12 @@ module.exports = (app) => {
 		} = req.body || {};
 
 		// validate all fields are present
-		if (
-			!username ||
-			!password ||
-			!company ||
-			!firstName ||
-			!lastName ||
-			!api_key
-		) {
+		if (!password || !company || !firstName || !lastName || !api_key) {
 			return res.status(409).json({ error: "Agent information is required." });
 		}
 
 		// careate new agent in DB
 		let agent = await agentService.registerAgent({
-			username,
 			password,
 			company,
 			firstName,
@@ -204,6 +194,8 @@ module.exports = (app) => {
 		}
 
 		// return success response
-		return res.status(200).json({ message: "Agent Created." });
+		return res
+			.status(200)
+			.json({ message: "Agent Created.", username: agent.username });
 	});
 };

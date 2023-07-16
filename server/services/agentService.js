@@ -1,4 +1,7 @@
 const { AgentRepository } = require("../database");
+const { AgentModel } = require("../database/models");
+
+const { generateUniqueUsername } = require("../utils/agent");
 const { hashPassword, generateAccessToken } = require("../utils/auth");
 const bcryptjs = require("bcryptjs");
 class AgentService {
@@ -15,19 +18,15 @@ class AgentService {
 				return { error: "Agent registration information is required" };
 			}
 
-			let existingAgent = await this.repository.FindAgentByUsername(
-				agentData.username
-			);
-
-			if (existingAgent) {
-				return {
-					error: "Sorry, Username registered already.",
-				};
-			}
+			let username = await generateUniqueUsername(AgentModel, [
+				agentData.firstName,
+				agentData.lastName,
+			]);
 
 			let newAgent = await this.repository.CreateAgent({
 				...agentData,
 				password: await hashPassword(agentData.password),
+				username,
 			});
 
 			return newAgent;

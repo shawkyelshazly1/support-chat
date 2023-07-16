@@ -27,8 +27,11 @@
 		"lodash": "^4.17.21",
 		"mongoose": "^7.3.3",
 		"mongoose-autopopulate": "^1.0.1",
+		"node-window-polyfill": "^1.0.2",
 		"redis": "^4.6.7",
 		"simple-encryptor": "^4.0.0",
-		"socket.io": "^4.7.1"
+		"socket.io": "^4.7.1",
+		"unique-username-generator": "^1.1.3",
+		"window-crypto": "^1.1.0"
 	}
 }

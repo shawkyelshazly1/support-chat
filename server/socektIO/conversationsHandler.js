@@ -11,7 +11,7 @@ module.exports = (io, socket, redis) => {
 			.emit("support:receive-history", { conversation, messages });
 	});
 
-	// TODO:CHANGE FOR USER ALSO
+	
 	socket.on("conversation:message", ({ conversation, message }) => {
 		socket.broadcast
 			.to(conversation)
@@ -23,12 +23,16 @@ module.exports = (io, socket, redis) => {
 		socket.broadcast.to(conversationId).emit("user:end-conversation");
 
 		// remove from active conversations on user disconnection
-		let { support, idx } = await retrieveSupport(redis, socket.id);
+		let { support, idx } = await retrieveSupport(
+			redis,
+			socket.id,
+			socket.api_key
+		);
 		support = {
 			...support,
 			active: support.active - 1,
 			closed: support.closed + 1,
 		};
-		await updateSupport(redis, support, idx);
+		await updateSupport(redis, support, idx, socket.api_key);
 	});
 };

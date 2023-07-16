@@ -8,10 +8,11 @@ const joinSupportList = async (
 		closed = 0,
 		active = 0,
 		stateStart = Date.now(),
-	}
+	},
+	api_key
 ) => {
 	redisClient.rpush(
-		"support-list",
+		`support-list-${api_key}`,
 		JSON.stringify({
 			socketId,
 			username,
@@ -24,9 +25,9 @@ const joinSupportList = async (
 };
 
 // remove support from list
-const leaveSupportList = async (redisClient, socketId) => {
+const leaveSupportList = async (redisClient, socketId, api_key) => {
 	let supportList = await redisClient.lrange(
-		"support-list",
+		`support-list-${api_key}`,
 		0,
 		-1,
 		async (err, data) => {
@@ -40,23 +41,22 @@ const leaveSupportList = async (redisClient, socketId) => {
 		(support) => support.socketId === socketId
 	)[0];
 
-	redisClient.lrem("support-list", 1, JSON.stringify(foundSupport));
+	redisClient.lrem(`support-list-${api_key}`, 1, JSON.stringify(foundSupport));
 };
 
 // update support
-const updateSupport = async (redisClient, updatedSupport, idx) => {
-	
+const updateSupport = async (redisClient, updatedSupport, idx, api_key) => {
 	redisClient.lset(
-		"support-list",
+		`support-list-${api_key}`,
 		parseInt(idx),
 		JSON.stringify(updatedSupport)
 	);
 };
 
 // get support from list by socketId nad returns it's index on the list
-const retrieveSupport = async (redisClient, socketId) => {
+const retrieveSupport = async (redisClient, socketId, api_key) => {
 	let supportList = await redisClient.lrange(
-		"support-list",
+		`support-list-${api_key}`,
 		0,
 		-1,
 		async (err, data) => {
@@ -78,9 +78,9 @@ const retrieveSupport = async (redisClient, socketId) => {
 };
 
 // get support list
-const getSupportList = async (redisClient) => {
+const getSupportList = async (redisClient, api_key) => {
 	let supportList = await redisClient.lrange(
-		"support-list",
+		`support-list-${api_key}`,
 		0,
 		-1,
 		async (err, data) => {

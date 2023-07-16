@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 const store = (set, get) => ({
-	activeWindow: "settings",
+	activeWindow: "dashboard",
 	setActiveWindow: (window) => set({ activeWindow: window }),
 });
 

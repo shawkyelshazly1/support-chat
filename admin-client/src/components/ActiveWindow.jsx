@@ -7,9 +7,9 @@ import { useAdminStore } from "../store/adminStore";
 import { socket } from "../socket/socket";
 
 export default function ActiveWindow() {
-	const { activeWindow } = useAppStore();
+	const { activeWindow, setActiveWindow } = useAppStore();
 
-	const { connectAdmin, logout } = useAdminStore();
+	const { connectAdmin, logout, admin } = useAdminStore();
 
 	useEffect(() => {
 		function onConnect() {
@@ -28,6 +28,13 @@ export default function ActiveWindow() {
 			socket.off("disconnect", onDisconnect);
 		};
 	}, []);
+
+	// to redirect manager from settings page only admin allowed
+	useEffect(() => {
+		if (admin.role === "manager" && activeWindow === "settings") {
+			setActiveWindow("dashboard");
+		}
+	}, [activeWindow, admin.role]);
 
 	return (
 		<div className="w-full flex-1 flex mt-6">

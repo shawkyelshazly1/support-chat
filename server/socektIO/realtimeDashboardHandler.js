@@ -7,6 +7,7 @@ module.exports = (io, socket, redis) => {
 		let { settings, ...adminData } = data;
 
 		socket.admin = adminData;
+		socket.api_key = settings.api_key;
 		socket.admin_settings = settings;
 
 		socket.type = "admin";
@@ -20,7 +21,7 @@ module.exports = (io, socket, redis) => {
 	});
 
 	socket.on("admin:queue-updates", async () => {
-		let customersInQueue = await getCustomersInQueue(redis);
+		let customersInQueue = await getCustomersInQueue(redis, socket.api_key);
 		let currentTime = Date.now();
 		let skillsGrouped = _.groupBy(
 			customersInQueue,
@@ -64,7 +65,7 @@ module.exports = (io, socket, redis) => {
 	});
 
 	socket.on("admin:agents-updates", async () => {
-		let data = await getSupportList(redis);
+		let data = await getSupportList(redis, socket.api_key);
 		socket.emit("admin:agents-updates", data);
 	});
 };

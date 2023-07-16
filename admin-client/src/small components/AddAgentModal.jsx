@@ -1,10 +1,5 @@
 import { Add } from "@mui/icons-material";
-import {
-	Button,
-	Dialog,
-	DialogContent,
-	DialogTitle,
-} from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useState } from "react";
 import AddAgentForm from "./AddAgentForm";
 

@@ -16,7 +16,10 @@ export default function Login() {
 			toast.error("Please enter a valid name");
 		} else {
 			socket.connect();
-			socket.emit("user:connect", { username: name });
+			socket.emit("user:connect", {
+				username: name,
+				api_key: import.meta.env.VITE_API_KEY,
+			});
 			setUsername(name);
 			setname("");
 			e.target[0].value = "";

@@ -10,17 +10,22 @@ module.exports = (io, socket, redis) => {
 	socket.on("support:connect", async (data) => {
 		console.log(`Support Connected.`);
 		socket.username = data.username;
+		socket.api_key = data.api_key;
 		socket.type = "support";
-		await joinSupportList(redis, {
-			socketId: socket.id,
-			username: data.username,
-		});
+		await joinSupportList(
+			redis,
+			{
+				socketId: socket.id,
+				username: data.username,
+			},
+			socket.api_key
+		);
 	});
 
 	socket.on("disconnect", async () => {
 		if (socket.type === "support") {
 			console.log(`Support Disconnected.`);
-			await leaveSupportList(redis, socket.id);
+			await leaveSupportList(redis, socket.id, socket.api_key);
 		}
 	});
 
@@ -33,7 +38,7 @@ module.exports = (io, socket, redis) => {
 
 	socket.on("support:new-conversation", async () => {
 		console.log("i have avail get me chat");
-		let userInQueue = await getFirstInQueue(redis);
+		let userInQueue = await getFirstInQueue(redis, socket.api_key);
 		if (userInQueue) {
 			userInQueue = JSON.parse(userInQueue);
 
@@ -56,30 +61,42 @@ module.exports = (io, socket, redis) => {
 			});
 
 			// add to active conversaitons on support
-			let { support, idx } = await retrieveSupport(redis, socket.id);
+			let { support, idx } = await retrieveSupport(
+				redis,
+				socket.id,
+				socket.api_key
+			);
 			support = {
 				...support,
 				active: support.active + 1,
 			};
-			await updateSupport(redis, support, idx);
+			await updateSupport(redis, support, idx, socket.api_key);
 		}
 	});
 
 	socket.on("support:update-status", async ({ status }) => {
-		let { support, idx } = await retrieveSupport(redis, socket.id);
+		let { support, idx } = await retrieveSupport(
+			redis,
+			socket.id,
+			socket.api_key
+		);
 		support = { ...support, status, stateStart: Date.now() };
-		await updateSupport(redis, support, idx);
+		await updateSupport(redis, support, idx, socket.api_key);
 	});
 
 	socket.on("support:leave", async ({ conversationId }) => {
 		socket.leave(conversationId);
 		// remove from active conversations on user disconnection
-		let { support, idx } = await retrieveSupport(redis, socket.id);
+		let { support, idx } = await retrieveSupport(
+			redis,
+			socket.id,
+			socket.api_key
+		);
 		support = {
 			...support,
 			active: support.active - 1,
 			closed: support.closed + 1,
 		};
-		await updateSupport(redis, support, idx);
+		await updateSupport(redis, support, idx, socket.api_key);
 	});
 };
